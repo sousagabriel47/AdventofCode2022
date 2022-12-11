@@ -6,7 +6,8 @@ class Solutions(object):
         """Initialize."""
         self.dict_function = {
             'day_1': self.day_1,
-            'day_2': self.day_2}
+            'day_2': self.day_2,
+            'day_3': self.day_3}
 
 
     def day_1(self, data):
@@ -68,7 +69,28 @@ class Solutions(object):
     def day_3(self, data):
         """Solution of day3."""
         rucksack = data.split('\n')
-        
+        element = []
+        for nruck in rucksack:
+            a = nruck[:int(len(nruck)/2)]
+            b = nruck[int(len(nruck)/2):]
+            dup = []
+            for el_a in a:
+                if b.count(el_a):
+                    dup.append(el_a)
+            set_dup = set(dup)
+            dict_dup = {}
+            for el_dup in set_dup:
+                dict_dup[el_dup] = a.count(el_dup) + b.count(el_dup)
+
+            element.append(max(dict_dup, key=dict_dup.get))
+        s_prio = 0
+        for el in element:
+            if ord(el) > 96:
+                s_prio += ord(el) - 96
+            else:
+                s_prio += ord(el) - 64 + 26
+        print(s_prio)
+        """Two Stars"""
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
