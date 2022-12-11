@@ -5,11 +5,11 @@ class Solutions(object):
     def __init__(self, data):
         """Initialize."""
         self.dict_function = {
-            'day_1': self.day_1(data),
-            'day_2': self.day_2(data)}
+            'day_1': self.day_1,
+            'day_2': self.day_2}
 
 
-    def day_1(init, data):
+    def day_1(self, data):
         """Solution of day1."""
         
         data = data.split('\n\n')
@@ -27,7 +27,7 @@ class Solutions(object):
         print(f'Max Calories: {max}')
         print(f'Top3 Calories: {sum(top3)}')
 
-    def day_2(init, data):
+    def day_2(self, data):
         """Solution of day2."""
         score = {
             'A X': 3,
@@ -44,11 +44,31 @@ class Solutions(object):
             'Y': 2,
             'Z': 3}
         sum_score = 0
-        turns = data.split()
+        turns = data.split('\n')
         for turn in turns:
             sum_score += score[turn] + bonus[turn[2]]
+        print(f'Total Score1: {sum_score}')
 
-        print(f'Total Score: {sum_score}')
+        score2 = {
+            'A': {0: 'Z',3: 'X',6: 'Y'},
+            'B': {0: 'X',3: 'Y',6: 'Z'},
+            'C': {0: 'Y',3: 'Z',6: 'X'}}
+
+        result_value = {
+            'X': 0,
+            'Y': 3,
+            'Z': 6}
+
+        sum_score = 0
+        for turn in turns:
+            sum_score += result_value[turn[2]] + bonus[score2[turn[0]][result_value[turn[2]]]]
+            print(sum_score)
+        print(f'Total Score1: {sum_score}')   
+
+    def day_3(self, data):
+        """Solution of day3."""
+        rucksack = data.split('\n')
+        
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
@@ -57,4 +77,4 @@ if __name__ == "__main__":
 
     print(f'####### DAY {nday} #######')
     s = Solutions(data)
-    s.dict_function[f'day_{nday}']
+    s.dict_function[f'day_{nday}'](data)
