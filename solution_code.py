@@ -91,6 +91,29 @@ class Solutions(object):
                 s_prio += ord(el) - 64 + 26
         print(s_prio)
         """Two Stars"""
+        element = []
+        for idx in range(0, len(rucksack), 3):
+            a = rucksack[idx]
+            b = rucksack[idx+1]
+            c = rucksack[idx+2]
+            dup = []
+            for el_a in a:
+                if b.count(el_a) and c.count(el_a):
+                    dup.append(el_a)
+            set_dup = set(dup)
+            dict_dup = {}
+            for el_dup in set_dup:
+                dict_dup[el_dup] = a.count(el_dup) + b.count(el_dup)
+
+            element.append(max(dict_dup, key=dict_dup.get))
+        s_prio = 0
+        for el in element:
+            if ord(el) > 96:
+                s_prio += ord(el) - 96
+            else:
+                s_prio += ord(el) - 64 + 26
+        print(s_prio)
+
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
