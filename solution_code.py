@@ -2,14 +2,15 @@
 
 class Solutions(object):
     """One funciton per day."""
-    def __init__(self, data):
+    def __init__(self):
         """Initialize."""
         self.dict_function = {
             'day_1': self.day_1,
             'day_2': self.day_2,
             'day_3': self.day_3,
             'day_4': self.day_4,
-            'day_5': self.day_5}
+            'day_5': self.day_5,
+            'day_6': self.day_6}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -188,11 +189,27 @@ class Solutions(object):
             top += st[-1]
         print(top)
 
+    def day_6(self, data):
+        """Solution of day6."""
+        msg = list(data)
+        l_msg = len(msg)
+        for idx in range(0, l_msg-4):
+            if len(set(msg[idx:idx+4])) == 4:
+                print(f'Star: {idx+4}')
+                break
+
+        for idx in range(0, l_msg-14):
+            chrs = set(msg[idx:idx+14])
+            if len(chrs) == 14:
+                print(f'Start of msg: {idx+14}')
+                break
+
+
 if __name__ == "__main__":
     nday = int(input('Day :'))
     with open(f'day{nday}','r') as file:
         data = file.read()
 
     print(f'####### DAY {nday} #######')
-    s = Solutions(data)
+    s = Solutions()
     s.dict_function[f'day_{nday}'](data)
