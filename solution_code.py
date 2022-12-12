@@ -10,7 +10,8 @@ class Solutions(object):
             'day_3': self.day_3,
             'day_4': self.day_4,
             'day_5': self.day_5,
-            'day_6': self.day_6}
+            'day_6': self.day_6,
+            'day_7': self.day_7}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -203,6 +204,57 @@ class Solutions(object):
             if len(chrs) == 14:
                 print(f'Start of msg: {idx+14}')
                 break
+
+    def day_7(self, data):
+        """Solution of day7."""
+        filesys = data.split("$ ")
+        filesys = [line.splitlines() for line in filesys]
+        self.root_files = {}
+        path = ['root']
+        for cmdline in filesys[1:]:
+            cmd = cmdline[0].split()[0]
+            arg = ''
+            if cmd == 'cd':
+                arg = cmdline[0].split()[1]
+                if arg == '/':
+                    path = ['root']
+                elif arg == '..':
+                    path.pop()
+                else:
+                    path.append(arg)
+            elif cmd == 'ls':
+                files = cmdline[1:]
+                dict_path = '/'.join(path)
+                if dict_path not in self.root_files.keys():
+                    self.root_files[dict_path] = {}
+                    name_dir = []
+                    size = 0
+                    for item in files:
+                        if item.split()[0] == 'dir':
+                            name_dir.append(item.split()[-1])
+                        else:
+                            size += int(item.split()[0])
+                    self.root_files[dict_path]['n_dir'] = name_dir
+                    self.root_files[dict_path]['files_size'] = size
+        dir_sum = 0
+        for folder in self.root_files:
+            total_size = self.day_7_folder_size_calc(folder)
+            if total_size < 100000:
+                dir_sum += total_size
+        print(dir_sum)
+
+
+    def day_7_folder_size_calc(self, path):
+        """Calculate size file total."""
+
+        size = 0
+        if len(self.root_files[path]['n_dir']):
+            size += self.root_files[path]['files_size']
+            for folders in self.root_files[path]['n_dir']:
+                size += self.day_7_folder_size_calc(path+'/'+folders)
+        else:
+            return self.root_files[path]['files_size']
+        return size
 
 
 if __name__ == "__main__":
