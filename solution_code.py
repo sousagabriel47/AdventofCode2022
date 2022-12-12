@@ -8,7 +8,8 @@ class Solutions(object):
             'day_1': self.day_1,
             'day_2': self.day_2,
             'day_3': self.day_3,
-            'day_4': self.day_4}
+            'day_4': self.day_4,
+            'day_5': self.day_5}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -149,6 +150,43 @@ class Solutions(object):
             else:
                 print('-', end='')
         print()
+
+    def day_5(self, data):
+        """Solution of day5."""
+        [maps, cmds] = data.split('\n\n')
+        cmds = cmds.splitlines()
+        cmds = [pos.split() for pos in cmds]
+        qnt = 1
+        from_s = 3
+        to_s = 5
+
+        max_stack = int(maps.splitlines()[-1].split()[-1])
+        maps = maps.splitlines()[-2::-1]
+        stacks = ['']*max_stack
+        for idx in range(max_stack):
+            for line in maps:
+                stacks[idx] += line[idx*4+1]
+            stacks[idx] = list(stacks[idx].replace(' ',''))
+
+
+        """
+        #one star
+        for cmd in cmds:
+            for el in range(int(cmd[qnt])):
+                stacks[int(cmd[to_s])-1].append(stacks[int(cmd[from_s])-1].pop())
+        
+        """
+        
+        #two star
+        for cmd in cmds:
+            n_el = len(stacks[int(cmd[from_s])-1])-int(cmd[qnt])
+            for el in range(int(cmd[qnt])):
+                stacks[int(cmd[to_s])-1].append(stacks[int(cmd[from_s])-1].pop(n_el))
+
+        top = ''
+        for st in stacks:
+            top += st[-1]
+        print(top)
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
