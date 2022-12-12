@@ -7,8 +7,8 @@ class Solutions(object):
         self.dict_function = {
             'day_1': self.day_1,
             'day_2': self.day_2,
-            'day_3': self.day_3}
-
+            'day_3': self.day_3,
+            'day_4': self.day_4}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -114,6 +114,41 @@ class Solutions(object):
                 s_prio += ord(el) - 64 + 26
         print(s_prio)
 
+    def day_4(self, data):
+        """Solution of day4."""
+        spaces = data.split('\n')
+        spaces = [elf.split(',') for elf in spaces]
+        soma = 0
+        for space in spaces:
+            a = [int(value) for value in space[0].split('-')]
+            b = [int(value) for value in space[1].split('-')]
+            if (((a[0] <= b[0]) and (a[1] >= b[1]))
+                or ((a[0] >= b[0]) and (a[1] <= b[1]))):
+                self.day_4_printspaces(a[0],a[1])
+                self.day_4_printspaces(b[0],b[1])
+                soma += 1
+            
+        print(f'Total Conflit: {soma}')
+        soma = 0
+        for space in spaces:
+            a = [int(value) for value in space[0].split('-')]
+            b = [int(value) for value in space[1].split('-')]
+            if (((b[0] <= a[1]) and (a[1] <= b[1]))) or (((a[0] <= b[1]) and (b[1] <= a[1]))):
+                print(f'{space} {b[0] <= a[1]} {a[1] <= b[1]} {a[0] <= b[1]} {b[1] <= a[1]}')
+                self.day_4_printspaces(a[0],a[1])
+                self.day_4_printspaces(b[0],b[1])
+                soma += 1
+            
+        print(f'Total Overlap: {soma}')
+
+    def day_4_printspaces(self, st, end):
+        """Print line of elv spaces."""
+        for idx in range(100):
+            if (idx >= int(st)) and (idx <= int(end)):
+                print('#', end='')
+            else:
+                print('-', end='')
+        print()
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
