@@ -239,10 +239,28 @@ class Solutions(object):
         dir_sum = 0
         for folder in self.root_files:
             total_size = self.day_7_folder_size_calc(folder)
+            self.root_files[folder]['total'] = total_size
             if total_size < 100000:
                 dir_sum += total_size
-        print(dir_sum)
 
+        
+        total = 70000000
+        need =  30000000
+        used = self.root_files['root']['total']
+        free = total - used
+        print(f'Livre {free}')
+
+        min_folder = 70000000
+        dir_choose = ''
+
+        for folder in self.root_files:
+            dir_space = self.root_files[folder]['total']
+            if (free + dir_space) > need:
+                if min_folder > (free + dir_space):
+                    min_folder = (free + dir_space)
+                    dir_choose = folder
+
+        print(f'Folder {dir_choose} -- {min_folder} -- {self.root_files[dir_choose]["total"]}')
 
     def day_7_folder_size_calc(self, path):
         """Calculate size file total."""
@@ -256,6 +274,8 @@ class Solutions(object):
             return self.root_files[path]['files_size']
         return size
 
+    def day_8(self, data):
+        """Solution of day8."""
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
