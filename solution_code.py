@@ -11,7 +11,8 @@ class Solutions(object):
             'day_4': self.day_4,
             'day_5': self.day_5,
             'day_6': self.day_6,
-            'day_7': self.day_7}
+            'day_7': self.day_7,
+            'day_8': self.day_8}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -276,6 +277,73 @@ class Solutions(object):
 
     def day_8(self, data):
         """Solution of day8."""
+        treemap = data.splitlines()
+        treemap = [list(line) for line in treemap]
+
+        x,y = len(treemap),len(treemap[0])
+
+        ext_tree = 2*len(treemap)+2*len(treemap[0])-4
+        int_tree = 0
+        max_scenario = 0
+        for idx in range(1,x-1):
+            for idy in range(1,y-1):
+                tree = treemap[idy][idx]
+                down = [el[idx] for el in treemap[idy+1:]]
+                up = [el[idx] for el in treemap[:idy]]
+                left = treemap[idy][:idx]
+                right = treemap[idy][idx+1:]
+                print(f'Tree {tree} -- ', end='')
+                """
+                if ((max(down) < tree)
+                    or (max(up) < tree)
+                    or (max(left) < tree)
+                    or (max(right) < tree)):
+                        int_tree += 1
+                        print(f'visible -- ', end='')
+                else:
+                    print(f'not visible -- ', end='')
+                """
+                view_u = view_d = view_r = view_l = 0
+                if right[0] >= tree:
+                    view_r = 1
+                else:
+                    for t_r in right:
+                        view_r += 1
+                        if t_r >= tree:
+                            break
+                if down[0] >= tree:
+                    view_d = 1
+                else:
+                    for t_d in down:
+                        view_d += 1
+                        if t_d >= tree:
+                            break
+
+                if left[-1] >= tree:
+                    view_l = 1
+                else:
+                    for t_l in left[::-1]:
+                        view_l += 1
+                        if t_l >= tree:
+                            break
+                if up[-1] >= tree:
+                    view_u = 1
+                else:
+                    for t_u in up[::-1]:
+                        view_u += 1
+                        if t_u >= tree:
+                            break
+
+                scenario = view_u*view_d*view_l*view_r
+                if scenario > max_scenario:
+                    max_scenario = scenario
+                print(f'Scenario :{view_u*view_d*view_l*view_r}')
+
+
+        print(f'External {ext_tree}')
+        print(f'Internal {int_tree}')
+        print(f'Max Scenario {max_scenario}')
+        print(f'Total {int_tree+ext_tree}')
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
