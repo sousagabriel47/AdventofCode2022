@@ -1,5 +1,5 @@
 """Solution of Advent of Code 2022."""
-
+import math
 class Solutions(object):
     """One funciton per day."""
     def __init__(self):
@@ -12,7 +12,8 @@ class Solutions(object):
             'day_5': self.day_5,
             'day_6': self.day_6,
             'day_7': self.day_7,
-            'day_8': self.day_8}
+            'day_8': self.day_8,
+            'day_9': self.day_9}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -128,12 +129,13 @@ class Solutions(object):
             b = [int(value) for value in space[1].split('-')]
             if (((a[0] <= b[0]) and (a[1] >= b[1]))
                 or ((a[0] >= b[0]) and (a[1] <= b[1]))):
-                self.day_4_printspaces(a[0],a[1])
-                self.day_4_printspaces(b[0],b[1])
+                #self.day_4_printspaces(a[0],a[1])
+                #self.day_4_printspaces(b[0],b[1])
                 soma += 1
             
         print(f'Total Conflit: {soma}')
         soma = 0
+        """
         for space in spaces:
             a = [int(value) for value in space[0].split('-')]
             b = [int(value) for value in space[1].split('-')]
@@ -142,8 +144,8 @@ class Solutions(object):
                 self.day_4_printspaces(a[0],a[1])
                 self.day_4_printspaces(b[0],b[1])
                 soma += 1
-            
-        print(f'Total Overlap: {soma}')
+         */   
+        print(f'Total Overlap: {soma}')"""
 
     def day_4_printspaces(self, st, end):
         """Print line of elv spaces."""
@@ -344,6 +346,77 @@ class Solutions(object):
         print(f'Internal {int_tree}')
         print(f'Max Scenario {max_scenario}')
         print(f'Total {int_tree+ext_tree}')
+
+    def day_9(self, data):
+        """Solution of day9."""
+        cmd = data.splitlines()
+        cmd = [line.split() for line in cmd]
+
+        x = y = 0
+        xmax = xmin = ymax = ymin = 0
+
+        for line in cmd:
+            if line[0] == 'R':
+                x += int(line[1])
+            if line[0] == 'L':
+                x -= int(line[1])
+            if line[0] == 'D':
+                y -= int(line[1])
+            if line[0] == 'U':
+                y += int(line[1])
+
+            if x > xmax:
+                xmax = x
+            if x < xmin:
+                xmin = x
+            if y > ymax:
+                ymax = y
+            if y < ymin:
+                ymax = y
+
+        map = [['.']*(xmax-xmin+1) for idx in range(ymax-ymin+1)]
+        map[ymin][xmin] = 's'
+        H = T = (-xmin,-ymin) 
+        vt = vh = (0,0)
+        x = -xmin
+        y = -ymin
+        for line in cmd:
+            for idx in range(int(line[1])):
+                if line[0] == 'R':
+                    x += 1
+                    vh = (1,0)
+                if line[0] == 'L':
+                    x -= 1
+                    vh = (-1,0)
+                if line[0] == 'D':
+                    y -= 1
+                    vh = (0,-1)
+                if line[0] == 'U':
+                    y += 1
+                    vh = (0,1)
+                H = (x,y)
+                d = (H[0] - T[0],H[1] - T[1])
+                d_abs = math.sqrt(d[0]**2 + d[1]**2)
+                if d_abs >= 2:
+                    vt = (-vh[0]+d[0],-vh[1]+d[1])
+                else:
+                    vt = (0,0)
+                T = (T[0]+vt[0],T[1]+vt[1])
+                map, count = self.day_9_map_print(map,T)
+                #print(f'{vh} -- {H} -- {d} -- {vt} -- {T} -- {count}')
+        print(f'Tail count -- {count}')
+
+
+    def day_9_map_print(self, map, T):
+        map[T[1]][T[0]] = 'T'
+        tc = 0
+        for line in map:
+            for row in line:
+                #print(row, end='')
+                if row == 'T':
+                    tc += 1
+            #print()
+        return map, tc
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
