@@ -13,7 +13,8 @@ class Solutions(object):
             'day_6': self.day_6,
             'day_7': self.day_7,
             'day_8': self.day_8,
-            'day_9': self.day_9}
+            'day_9': self.day_9,
+            'day_10': self.day_10}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -372,14 +373,18 @@ class Solutions(object):
             if y > ymax:
                 ymax = y
             if y < ymin:
-                ymax = y
+                ymin = y
 
-        map = [['.']*(xmax-xmin+1) for idx in range(ymax-ymin+1)]
-        map[ymin][xmin] = 's'
-        H = T = (-xmin,-ymin) 
+        lx = xmax-xmin+1
+        ly = ymax-ymin+1
+        
+        H = (-xmin,-ymin) 
+        T = [(-xmin,-ymin)]*9 
         vt = vh = (0,0)
         x = -xmin
         y = -ymin
+        steps = 0
+
         for line in cmd:
             for idx in range(int(line[1])):
                 if line[0] == 'R':
@@ -395,28 +400,84 @@ class Solutions(object):
                     y += 1
                     vh = (0,1)
                 H = (x,y)
-                d = (H[0] - T[0],H[1] - T[1])
-                d_abs = math.sqrt(d[0]**2 + d[1]**2)
-                if d_abs >= 2:
-                    vt = (-vh[0]+d[0],-vh[1]+d[1])
-                else:
-                    vt = (0,0)
-                T = (T[0]+vt[0],T[1]+vt[1])
-                map, count = self.day_9_map_print(map,T)
-                #print(f'{vh} -- {H} -- {d} -- {vt} -- {T} -- {count}')
+                for iT in range(0, steps+1):
+                    if iT == 0:
+                        d = (H[0] - T[0][0],H[1] - T[0][1])
+                        d_abs = math.sqrt(d[0]**2 + d[1]**2)
+                        if d_abs >= 2:
+                            vt = (-vh[0]+d[0],-vh[1]+d[1])
+                        else:
+                            vt = (0,0)
+                    else:
+                        d = (T[iT-1][0] - T[iT][0],T[iT-1][1] - T[iT][1])
+                        d_abs = math.sqrt(d[0]**2 + d[1]**2)
+                    if d_abs >= 2:
+                        T[iT] = (T[iT][0]+vt[0],T[iT][1]+vt[1])
+                
+                count = self.day_9_map_print(lx,ly,H,T,steps)
+
+                
+
+
+                print(f'{vh} -- {H} -- {d} -- {vt} -- {T} -- {count}')
+                if steps <= 7:
+                    steps += 1
         print(f'Tail count -- {count}')
 
 
-    def day_9_map_print(self, map, T):
-        map[T[1]][T[0]] = 'T'
+
+    def day_9_map_print(self, lx, ly, H, T, steps):
+
+        maps = [['.']*(lx) for idx in range(ly)]
+        maps[H[1]][H[0]] = 'H'
+        for idxT in range(steps+1):
+            maps[T[idxT][1]][T[idxT][0]] = idxT
+        
         tc = 0
-        for line in map:
+        for line in maps:
             for row in line:
-                #print(row, end='')
-                if row == 'T':
+                print(row, end='')
+                if row == 8:
                     tc += 1
-            #print()
-        return map, tc
+            print()
+        print('#'*40)
+        return tc
+
+    def day_10(self, data):
+        """Solution for day10."""
+        ciclo = 0
+        ist = 0
+        X = 1
+        cmds = [line.split() for line in data.splitlines()]
+        total = 0
+        ctr = '#'
+        for cmd in cmds:
+
+            if cmd[0] == 'noop':
+                ist = 1
+                pay_X = 0
+            elif cmd [0] == 'addx':
+                ist = 2
+                pay_X = int(cmd[1])
+
+            for idx in range(ist):
+                ciclo += 1
+                
+                if (ciclo%40) == 20:
+                    
+                    if ciclo <= 220:
+                        total += X*ciclo
+                if (ciclo%40) == 0:
+                    print(f'Ciclo: {ciclo:03d} -- {ctr} -- {X} -- {X*ciclo}')
+                    ctr = ''
+                if (idx % 2):
+                    X += pay_X
+                if (ciclo%40) in range(X-1,X+2):
+                    ctr += '#'
+                else:
+                    ctr += '.'
+        ciclo += 1
+        print(f'total: {total}')    
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
