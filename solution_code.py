@@ -14,7 +14,8 @@ class Solutions(object):
             'day_7': self.day_7,
             'day_8': self.day_8,
             'day_9': self.day_9,
-            'day_10': self.day_10}
+            'day_10': self.day_10,
+            'day_11': self.day_11}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -424,8 +425,6 @@ class Solutions(object):
                     steps += 1
         print(f'Tail count -- {count}')
 
-
-
     def day_9_map_print(self, lx, ly, H, T, steps):
 
         maps = [['.']*(lx) for idx in range(ly)]
@@ -478,6 +477,75 @@ class Solutions(object):
                     ctr += '.'
         ciclo += 1
         print(f'total: {total}')    
+
+    def day_11(self, data):
+        """Solution day11."""
+        data = data.split('\n\n')
+        monkies = {}
+        for monkie_data in data:
+            monkie_data = monkie_data.splitlines()
+            monkie = monkie_data[0].replace(':','').split()[-1]
+            itens = [int(item) for item in monkie_data[1].replace(',','').split()[2:]]
+
+            opp = monkie_data[2].split('=')[1]
+
+            if opp == ' old * old':
+                math_opp = self.day_11_pow
+                payload = 2
+            elif opp.split()[1] == '+':
+                math_opp = self.day_11_add
+                payload = int(opp.split()[2])
+            elif opp.split()[1] == '-':
+                math_opp = self.day_11_sub
+                payload = int(opp.split()[2])
+            elif opp.split()[1] == '/':
+                math_opp = self.day_11_div
+                payload = int(opp.split()[2])
+            elif opp.split()[1] == '*':
+                math_opp = self.day_11_mult
+                payload = int(opp.split()[2])
+
+            test = int(monkie_data[3].split()[-1])
+            t_true = monkie_data[4].split()[-1]
+            t_false = monkie_data[5].split()[-1]
+
+
+            monkies[monkie] = {}
+            monkies[monkie]['list'] = itens
+            monkies[monkie]['opp'] = math_opp
+            monkies[monkie]['payload'] = payload
+            monkies[monkie]['test'] = test
+            monkies[monkie]['result'] = {}
+            monkies[monkie]['result'][True] = t_true
+            monkies[monkie]['result'][False] = t_false
+
+        for monkie in monkies.keys():
+            itens = monkies[monkie]['list']
+            print(f'Monkey: {monkie}')
+            for idx in range(len(itens)):
+                opp = monkies[monkie]['opp'](itens[idx], monkies[monkie]['payload'])
+                test = (opp % monkies[monkie]['test']) == 0
+                monkies[monkies[monkie]['result'][test]]['list'].append(opp)
+                monkies[monkie]['list'].pop(idx)
+
+        for monkie in monkies.keys():
+            print(monkies[monkie])
+
+    def day_11_add(self, old, payload):
+        """add function day11."""
+        return math.floor((old + payload)/3)
+    def day_11_sub(self, old, payload):
+        """add function day11."""
+        return math.floor((old - payload)/3)
+    def day_11_mult(self, old, payload):
+        """add function day11."""
+        return math.floor((old * payload)/3)
+    def day_11_div(self, old, payload):
+        """add function day11."""
+        return math.floor((old / payload)/3)
+    def day_11_pow(self, old, payload):
+        """add function day11."""
+        return math.floor((math.pow(old,payload))/3)
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
