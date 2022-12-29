@@ -512,40 +512,55 @@ class Solutions(object):
 
             monkies[monkie] = {}
             monkies[monkie]['list'] = itens
+            monkies[monkie]['newlist'] = []
             monkies[monkie]['opp'] = math_opp
             monkies[monkie]['payload'] = payload
             monkies[monkie]['test'] = test
             monkies[monkie]['result'] = {}
             monkies[monkie]['result'][True] = t_true
             monkies[monkie]['result'][False] = t_false
+            monkies[monkie]['testes'] = 0
+        monkies_k = monkies.keys()
+        for r in range(10000):
+            if r == 19 or r%1000 == 0:
+                print(f'Round {r}')
+            for monkie in monkies_k:
+                itens = monkies[monkie]['list']
+                for idx in range(len(itens)):
+                    opp = monkies[monkie]['opp'](itens[0], monkies[monkie]['payload'])
+                    test = (opp % monkies[monkie]['test']) == 0
+                    if test:
+                        monkies[monkies[monkie]['result'][True]]['list'].append(opp)
+                    else:
+                        monkies[monkies[monkie]['result'][False]]['list'].append(opp)
+                    monkies[monkie]['list'].pop(0)
+                    monkies[monkie]['testes'] += 1
 
-        for monkie in monkies.keys():
-            itens = monkies[monkie]['list']
-            print(f'Monkey: {monkie}')
-            for idx in range(len(itens)):
-                opp = monkies[monkie]['opp'](itens[idx], monkies[monkie]['payload'])
-                test = (opp % monkies[monkie]['test']) == 0
-                monkies[monkies[monkie]['result'][test]]['list'].append(opp)
-                monkies[monkie]['list'].pop(idx)
+                if r == 19 or r%100 == 0:
+                    print(f'\tMonkey {monkie} -- {monkies[monkie]["testes"]}')
 
+        test_c = []
         for monkie in monkies.keys():
-            print(monkies[monkie])
+            test_c.append(monkies[monkie]['testes'])
+
+        test_c = sorted(test_c)[-2:]
+        print(f'{test_c[0] * test_c[1]}')
 
     def day_11_add(self, old, payload):
         """add function day11."""
-        return math.floor((old + payload)/3)
+        return (old + payload)
     def day_11_sub(self, old, payload):
         """add function day11."""
-        return math.floor((old - payload)/3)
+        return (old - payload)
     def day_11_mult(self, old, payload):
         """add function day11."""
-        return math.floor((old * payload)/3)
+        return (old * payload)
     def day_11_div(self, old, payload):
         """add function day11."""
-        return math.floor((old / payload)/3)
+        return (old / payload)
     def day_11_pow(self, old, payload):
         """add function day11."""
-        return math.floor((math.pow(old,payload))/3)
+        return old**payload
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
