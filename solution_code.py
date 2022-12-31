@@ -15,7 +15,8 @@ class Solutions(object):
             'day_8': self.day_8,
             'day_9': self.day_9,
             'day_10': self.day_10,
-            'day_11': self.day_11}
+            'day_11': self.day_11,
+            'day_12': self.day_12}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -521,13 +522,16 @@ class Solutions(object):
             monkies[monkie]['result'][False] = t_false
             monkies[monkie]['testes'] = 0
         monkies_k = monkies.keys()
+        lcm = 1
+        for monkie in monkies_k:
+            lcm *= monkies[monkie]['test']
         for r in range(10000):
-            if r == 19 or r%1000 == 0:
+            if r == 19 or r%100 == 0:
                 print(f'Round {r}')
             for monkie in monkies_k:
                 itens = monkies[monkie]['list']
                 for idx in range(len(itens)):
-                    opp = monkies[monkie]['opp'](itens[0], monkies[monkie]['payload'])
+                    opp = (monkies[monkie]['opp'](itens[0], monkies[monkie]['payload'])% lcm)
                     test = (opp % monkies[monkie]['test']) == 0
                     if test:
                         monkies[monkies[monkie]['result'][True]]['list'].append(opp)
@@ -561,6 +565,80 @@ class Solutions(object):
     def day_11_pow(self, old, payload):
         """add function day11."""
         return old**payload
+
+    def day_12(self, data):
+        """Solution day12."""
+        data = data.splitlines()
+        x = 1
+        y = 0
+        map = []
+        for row in range(len(data)):
+            map.append([])
+            for col in range(len(data[row])):
+                level = data[row][col]
+                if level == 'S':
+                    start = (row,col)
+                    data[row][col].replace('S','a')
+                    level = 'a'  
+                elif level == 'E':
+                    end = (row,col)
+                    data[row][col].replace('E','z')
+                    level = 'z'        
+                map[row].append(level)
+        nrows = len(map)
+        ncols = len(map[0])
+        map_print = [['.']*(ncols) for idx in range(nrows)]
+        map_graph = [[[]*1]*(ncols) for idx in range(nrows)]
+        print(map_graph)
+        for row in range(nrows):
+            print(f'Row: {row}\n\tCol: ', end ='')
+            for col in range(ncols):
+                direction = []
+                print(f' {col}:', end = '')
+                if row == 0:
+                    if ord(map[row+1][col]) >= ord(map[row][col]):
+                        direction.append((row+1,col))
+                        print('v', end='')
+                        
+                elif row == (nrows-1):
+                    if ord(map[row-1][col]) >= ord(map[row][col]):
+                        direction.append((row-1,col))
+                        print('^', end='')
+                else:
+                    if ord(map[row-1][col]) >= ord(map[row][col]):
+                        direction.append((row-1,col))
+                        print('^', end='')
+                    if ord(map[row+1][col]) >= ord(map[row][col]):
+                        direction.append((row+1,col))
+                        print('v', end='')
+
+
+                if col == 0:
+                    if ord(map[row][col+1]) >= ord(map[row][col]):
+                        direction.append((row,col+1))
+                        print('>', end='')
+                elif col == (ncols-1):
+                    if ord(map[row][col-1]) >= ord(map[row][col]):
+                        direction.append((row,col-1))
+                        print('<', end='')
+                else:
+                    if ord(map[row][col-1]) >= ord(map[row][col]):
+                        direction.append((row,col-1))
+                        print('<', end='')
+                    if ord(map[row][col+1]) >= ord(map[row][col]):
+                        direction.append((row,col+1))
+                        print('>', end='')
+
+                map_graph[row][col] = direction
+            print()
+
+
+        print(start)
+        print(end)
+
+        print(map_graph[0])
+
+
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
