@@ -4,19 +4,6 @@ class Solutions(object):
     """One funciton per day."""
     def __init__(self):
         """Initialize."""
-        self.dict_function = {
-            'day_1': self.day_1,
-            'day_2': self.day_2,
-            'day_3': self.day_3,
-            'day_4': self.day_4,
-            'day_5': self.day_5,
-            'day_6': self.day_6,
-            'day_7': self.day_7,
-            'day_8': self.day_8,
-            'day_9': self.day_9,
-            'day_10': self.day_10,
-            'day_11': self.day_11,
-            'day_12': self.day_12}
 
     def day_1(self, data):
         """Solution of day1."""
@@ -589,62 +576,148 @@ class Solutions(object):
         ncols = len(map[0])
         map_print = [['.']*(ncols) for idx in range(nrows)]
         map_graph = [[[]*1]*(ncols) for idx in range(nrows)]
-        print(map_graph)
+        grafo = {}
         for row in range(nrows):
             print(f'Row: {row}\n\tCol: ', end ='')
             for col in range(ncols):
                 direction = []
                 print(f' {col}:', end = '')
                 if row == 0:
-                    if ord(map[row+1][col]) >= ord(map[row][col]):
-                        direction.append((row+1,col))
+                    if ((ord(map[row+1][col]) == ord(map[row][col])) or
+                       (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
+                       (ord(map[row+1][col]) < ord(map[row][col]))):
+                        direction.append(f'{row+1}_{col}')
                         print('v', end='')
                         
                 elif row == (nrows-1):
-                    if ord(map[row-1][col]) >= ord(map[row][col]):
-                        direction.append((row-1,col))
+                    if ((ord(map[row-1][col]) == ord(map[row][col])) or
+                       (ord(map[row-1][col]) == (ord(map[row][col])+1)) or
+                       (ord(map[row-1][col]) < ord(map[row][col]))):
+                        direction.append(f'{row-1}_{col}')
                         print('^', end='')
                 else:
-                    if ord(map[row-1][col]) >= ord(map[row][col]):
-                        direction.append((row-1,col))
+                    if ((ord(map[row-1][col]) == ord(map[row][col])) or
+                       (ord(map[row-1][col]) == (ord(map[row][col])+1)) or
+                       (ord(map[row-1][col]) < ord(map[row][col]))):
+                        direction.append(f'{row-1}_{col}')
                         print('^', end='')
-                    if ord(map[row+1][col]) >= ord(map[row][col]):
-                        direction.append((row+1,col))
+                    if ((ord(map[row+1][col]) == ord(map[row][col])) or
+                       (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
+                       (ord(map[row+1][col]) < ord(map[row][col]))):
+                        direction.append(f'{row+1}_{col}')
                         print('v', end='')
 
 
                 if col == 0:
-                    if ord(map[row][col+1]) >= ord(map[row][col]):
-                        direction.append((row,col+1))
+                    if ((ord(map[row][col+1]) == ord(map[row][col])) or
+                       (ord(map[row][col+1]) == (ord(map[row][col])+1)) or
+                       (ord(map[row][col+1]) < ord(map[row][col]))):
+                        direction.append(f'{row}_{col+1}')
                         print('>', end='')
                 elif col == (ncols-1):
-                    if ord(map[row][col-1]) >= ord(map[row][col]):
-                        direction.append((row,col-1))
+                    if ((ord(map[row][col-1]) == ord(map[row][col])) or
+                       (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
+                       (ord(map[row][col-1]) < ord(map[row][col]))):
+                        direction.append(f'{row}_{col-1}')
                         print('<', end='')
                 else:
-                    if ord(map[row][col-1]) >= ord(map[row][col]):
-                        direction.append((row,col-1))
+                    if ((ord(map[row][col-1]) == ord(map[row][col])) or
+                       (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
+                       (ord(map[row][col-1]) < ord(map[row][col]))):
+                        direction.append(f'{row}_{col-1}')
                         print('<', end='')
-                    if ord(map[row][col+1]) >= ord(map[row][col]):
-                        direction.append((row,col+1))
+                    if ((ord(map[row][col+1]) == ord(map[row][col])) or
+                       (ord(map[row][col+1]) == (ord(map[row][col])+1)) or
+                       (ord(map[row][col+1]) < ord(map[row][col]))):
+                        direction.append(f'{row}_{col+1}')
                         print('>', end='')
+
+                grafo[f'{row}_{col}'] = direction
 
                 map_graph[row][col] = direction
             print()
 
 
-        print(start)
-        print(end)
+        grafo_dist = {}
+        grafo_vist = {}
 
-        print(map_graph[0])
+        for no in grafo.keys():
+            grafo_dist[no] = int(1e9)
+            grafo_vist[no] = False
 
+        no = f'{start[0]}_{start[1]}'
+        
+        grafo_dist[no] = 0
+        grafo_vist[no] = True
+
+        Q = []
+
+        Q.append(no)
+        dist = 0
+        while Q:
+            s = Q.pop(0)
+            print(s)
+            for vizinhos in grafo[s]:
+                if not grafo_vist[vizinhos]:
+                    grafo_vist[vizinhos] = True
+                    Q.append(vizinhos)
+
+        print(dist)
+
+    def day_13(self, data):
+        """Solution day13."""
+        packets = [pck.split('\n') for pck in data.split('\n\n')]
+
+        order = []
+        idx = 0
+        for p1, p2 in packets:
+            idx += 1
+            a = self.day_13_comp(eval(p1), eval(p2))
+            if a:
+                print(f'{idx} -- {p1} : {p2}')
+                order.append(idx)
+        print(sum(order))
+
+    def day_13_comp(self, pck1, pck2):
+        """Function for comparation day13."""
+        if len(pck1) == 0 and len(pck2):
+            return 1
+        if len(pck2) == 0 and len(pck1):
+            return 0
+
+        for left, right in zip(pck1,pck2):
+            if type(left) != list and type(right) != list:
+                if left > right:
+                    return 0
+                elif left < right:
+                    return 1
+            elif type(left) != type(right):
+                if type(left) == list:
+                    c = self.day_13_comp(left,[right])
+                    if c != None:
+                        return c
+                if type(right) == list:
+                    c = self.day_13_comp([left], right)
+                    if c != None:
+                        return c
+            
+            elif type(left) == list and type(right) == list:
+                c = self.day_13_comp(left, right)
+                if c != None:
+                    return c
+
+        if len(pck1) > len(pck2):
+            return 0
+        else:
+            return 1
 
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
-    with open(f'day{nday}','r') as file:
+    with open(f'.\data\day{nday}','r') as file:
         data = file.read()
 
     print(f'####### DAY {nday} #######')
     s = Solutions()
-    s.dict_function[f'day_{nday}'](data)
+    func = f's.day_{nday}(data)'
+    eval(func)
