@@ -667,50 +667,59 @@ class Solutions(object):
     def day_13(self, data):
         """Solution day13."""
         packets = [pck.split('\n') for pck in data.split('\n\n')]
-
+        l=0
         order = []
         idx = 0
         for p1, p2 in packets:
             idx += 1
-            a = self.day_13_comp(eval(p1), eval(p2))
+            a = self.day_13_comp(eval(p1), eval(p2),l)
             if a:
-                print(f'{idx} -- {p1} : {p2}')
                 order.append(idx)
-        print(sum(order))
+        print(f'part1 :{sum(order)}')
 
-    def day_13_comp(self, pck1, pck2):
+        data = data.replace('\n\n','\n')
+        packets = data.split('\n')
+        packets = [p.replace('[','').replace(']','').replace(',','') for p in packets]
+        packets.append('2')
+        packets.append('6')
+        idx = 0
+        total = 1
+        for p in sorted(packets):
+            idx += 1
+            print(p)
+            if p == '2' or p =='6':
+                total *= idx
+        print(total)
+
+    def day_13_comp(self, pck1, pck2, level):
         """Function for comparation day13."""
-        if len(pck1) == 0 and len(pck2):
-            return 1
-        if len(pck2) == 0 and len(pck1):
-            return 0
-
-        for left, right in zip(pck1,pck2):
-            if type(left) != list and type(right) != list:
-                if left > right:
-                    return 0
-                elif left < right:
-                    return 1
-            elif type(left) != type(right):
-                if type(left) == list:
-                    c = self.day_13_comp(left,[right])
-                    if c != None:
-                        return c
-                if type(right) == list:
-                    c = self.day_13_comp([left], right)
-                    if c != None:
-                        return c
-            
-            elif type(left) == list and type(right) == list:
-                c = self.day_13_comp(left, right)
-                if c != None:
+        idx = 0
+        if isinstance(pck1, int) and isinstance(pck2, int):
+            if pck1 < pck2:
+                return 1
+            elif pck1 > pck2:
+                return 0
+            else:
+                return -1
+        elif isinstance(pck1, list) and isinstance(pck2, list):
+            for left, right in zip(pck1,pck2):
+                c = self.day_13_comp(left, right, level+1)
+                if c != -1:
                     return c
-
-        if len(pck1) > len(pck2):
-            return 0
-        else:
-            return 1
-
+                
+                idx += 1
+    
+            if idx < len(pck1) and idx == len(pck2):
+                return 0
+            elif idx == len(pck1) and idx < len(pck2):
+                return 1
+            else:
+                return -1
+        elif isinstance(pck1, list) and isinstance(pck2, int):
+            return self.day_13_comp(pck1, [pck2], level+1)
+        elif isinstance(pck1, int) and isinstance(pck2, list):
+            return self.day_13_comp([pck1], pck2, level+1)
+            
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
