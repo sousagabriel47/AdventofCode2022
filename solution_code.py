@@ -1,5 +1,6 @@
 """Solution of Advent of Code 2022."""
 import math
+import functools
 class Solutions(object):
     """One funciton per day."""
     def __init__(self):
@@ -677,19 +678,29 @@ class Solutions(object):
                 order.append(idx)
         print(f'part1 :{sum(order)}')
 
+
+        #to high 1561824
+        #to high 33408
         data = data.replace('\n\n','\n')
         packets = data.split('\n')
+        """
+        packets = [p.replace('[]','0') for p in packets]
         packets = [p.replace('[','').replace(']','').replace(',','') for p in packets]
         packets.append('2')
         packets.append('6')
-        idx = 0
+        """
+
+
+
+        idx2 = 1
+        idx6 = 2
         total = 1
-        for p in sorted(packets):
-            idx += 1
-            print(p)
-            if p == '2' or p =='6':
-                total *= idx
-        print(total)
+        for p in packets:
+            if self.day_13_comp(eval(p), [[2]],l):
+                idx2 += 1
+            if self.day_13_comp(eval(p), [[6]],l):
+                idx6 += 1
+        print(idx2*idx6)
 
     def day_13_comp(self, pck1, pck2, level):
         """Function for comparation day13."""
@@ -719,7 +730,42 @@ class Solutions(object):
             return self.day_13_comp(pck1, [pck2], level+1)
         elif isinstance(pck1, int) and isinstance(pck2, list):
             return self.day_13_comp([pck1], pck2, level+1)
-            
+
+    def day_13_comp2(self, pck1, pck2):
+        """Function for comparation day13."""
+        idx = 0
+        if isinstance(pck1, int) and isinstance(pck2, int):
+            if pck1 < pck2:
+                return -1
+            elif pck1 > pck2:
+                return 1
+            else:
+                return 0
+        elif isinstance(pck1, list) and isinstance(pck2, list):
+            for left, right in zip(pck1,pck2):
+                c = self.day_13_comp(left, right)
+                if c != 0:
+                    return c
+                
+                idx += 1
+    
+            if idx < len(pck1) and idx == len(pck2):
+                return -1
+            elif idx == len(pck1) and idx < len(pck2):
+                return 1
+            else:
+                return 0
+        elif isinstance(pck1, list) and isinstance(pck2, int):
+            return self.day_13_comp(pck1, [pck2])
+        elif isinstance(pck1, int) and isinstance(pck2, list):
+            return self.day_13_comp([pck1], pck2)   
+
+    def day_14(self, data):
+        """day14."""
+        rocks = data.splitlines()
+        rocks = [rock.split(' -> ') for rock in rocks]
+        
+        print(rocks)
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
