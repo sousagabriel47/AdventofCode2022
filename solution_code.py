@@ -883,8 +883,25 @@ class Solutions(object):
                 print(row, end='')
             print()
 
+    def day_15(self, data):
+        """day15 solution."""
+        data = data.splitlines()
+        data = [line.replace(',','') for line in data]
+        data = [line.split(':') for line in data]
+        #sensores e beacons
+        sensors = []
+        beacons = []
+        for s,b in data:
+            sensors.append([int(s.split('=')[1].replace(' y','')),int(s.split('=')[2])])
+            beacons.append([int(b.split('=')[1].replace(' y','')),int(b.split('=')[2])])
+        print(sensors)
+        print(beacons)
+
+
+
+
 if __name__ == "__main__":
-    nday = 14 #int(input('Day :'))
+    nday = int(input('Day :'))
     with open(f'.\data\day{nday}','r') as file:
         data = file.read()
 
