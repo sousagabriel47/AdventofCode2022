@@ -1,6 +1,6 @@
 """Solution of Advent of Code 2022."""
 import math
-import functools
+from copy import deepcopy
 class Solutions(object):
     """One funciton per day."""
     def __init__(self):
@@ -764,11 +764,127 @@ class Solutions(object):
         """day14."""
         rocks = data.splitlines()
         rocks = [rock.split(' -> ') for rock in rocks]
+        rocks_coord = []
+
+        #separacao das coordenadas
+        for idx, r in enumerate(rocks):
+            rocks_coord.append([])
+            for kdx,coord in enumerate(r):
+                x = int(coord.split(',')[0])
+                y = int(coord.split(',')[1])
+                rocks_coord[idx].append([x,y])
         
-        print(rocks)
+        #limites x e y
+        xmin = 10e10
+        ymin = 10e10
+        ymax = 0
+        xmax = 0
+        for rock in rocks_coord:
+            for coord in rock:
+                if coord[0] > xmax:
+                    xmax = coord[0]
+                elif coord[0] < xmin:
+                    xmin = coord[0]
+
+                if coord[1] > ymax:
+                    ymax = coord[1]
+                elif coord[1] < ymin:
+                    ymin = coord[1]
+        
+        #mapeamento rochas
+        xdim = xmax-xmin+1
+        padding = xdim*4
+        ydim = ymax+1
+        maps = [['.']*(xdim+4*padding) for _ in range(ydim+2)]
+        for rock in rocks_coord:
+            for icoord in range(len(rock)-1):
+                if rock[icoord][0] == rock[icoord+1][0]:
+                    x = rock[icoord][0]-xmin
+                    y1 = rock[icoord][1]
+                    y2 = rock[icoord+1][1]
+                    if y2 > y1:
+                        for i in range(y1,y2+1):
+                            maps[i][x+padding] = '#'
+                    else:
+                      for i in range(y2,y1+1):
+                            maps[i][x+padding] = '#'
+                elif rock[icoord][1] == rock[icoord+1][1]:
+                    y = rock[icoord][1]
+                    x1 = rock[icoord][0]-xmin
+                    x2 = rock[icoord+1][0]-xmin
+                    if x2 > x1:
+                        for i in range(x1,x2+1):
+                            maps[y][i+padding] = '#'
+                    else:
+                        for i in range(x2,x1+1):
+                            maps[y][i+padding] = '#'
+
+        maps2 = deepcopy(maps)
+
+        # areia
+        xareia = 500
+        count = 0
+        while(y<=ymax):
+            xareia = 500
+            y = 0
+            while(True):
+                if y == ymax+1:
+                    maps[y][xareia-xmin+padding] = 'o'
+                    break
+                if (maps[y+1][xareia-xmin+padding] == '.'):
+                    y += 1
+                elif maps[y+1][xareia-xmin+padding] != '.':
+                    if maps[y+1][xareia-xmin-1+padding] == '.':
+                         y += 1
+                         xareia -= 1
+                    elif maps[y+1][xareia-xmin+1+padding] == '.':
+                        y += 1
+                        xareia += 1
+                    else:
+                        maps[y][xareia-xmin+padding] = 'o'
+                        break
+            count += 1
+
+        #self.day_14_print_map(maps)
+        #print(f'Part 1: {count-1}')
+
+        
+        for idx,_ in enumerate(maps2[ymax+1]):
+            maps2[ymax+2][idx] = '#'
+
+        xareia = 500
+        count = 0
+        y = 0
+        while(maps2[0][xareia-xmin+padding] != 'o'):
+            xareia = 500
+            y = 0
+            while(1):
+                if (maps2[y+1][xareia-xmin+padding] == '.'):
+                    y += 1
+                elif maps2[y+1][xareia-xmin+padding] != '.':
+                    if maps2[y+1][xareia-xmin-1+padding] == '.':
+                         y += 1
+                         xareia -= 1
+                    elif maps2[y+1][xareia-xmin+1+padding] == '.':
+                        y += 1
+                        xareia += 1
+                    else:
+                        maps2[y][xareia-xmin+padding] = 'o'
+                        break
+            count += 1
+        self.day_14_print_map(maps2)
+        print(f'Part2: {count}')
+    
+    def day_14_print_map(self, map):
+
+        for y,line in enumerate(map):
+            print(f'{y}\t',end='')
+            for row in line:
+                print(row, end='')
+            print()
 
 if __name__ == "__main__":
-    nday = int(input('Day :'))
+    nday = 14 #int(input('Day :'))
     with open(f'.\data\day{nday}','r') as file:
         data = file.read()
 
