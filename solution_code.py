@@ -894,9 +894,45 @@ class Solutions(object):
         for s,b in data:
             sensors.append([int(s.split('=')[1].replace(' y','')),int(s.split('=')[2])])
             beacons.append([int(b.split('=')[1].replace(' y','')),int(b.split('=')[2])])
-        print(sensors)
-        print(beacons)
+        radius = []
+        xmin = 0
+        xmax = 0
+        ymin = 0
+        ymax = 0
+        for idx,_ in enumerate(sensors):
 
+            xr = abs(sensors[idx][0]-beacons[idx][0])
+            yr = abs(sensors[idx][1]-beacons[idx][1])
+            radius.append(xr+yr)
+            
+            if xmin > (sensors[idx][0]-radius[idx]):
+                xmin = sensors[idx][0]-radius[idx]
+            if xmax < (sensors[idx][0]+radius[idx]):
+                xmax = sensors[idx][0]+radius[idx]
+            if ymin > (sensors[idx][1]-radius[idx]):
+                ymin = sensors[idx][1]-radius[idx]
+            if ymax < (sensors[idx][1]+radius[idx]):
+                ymax = sensors[idx][1]+radius[idx]
+            
+            if xmin > (beacons[idx][0]):
+                xmin = beacons[idx][0]
+            if xmax < (beacons[idx][0]):
+                xmax = beacons[idx][0]
+            if ymin > (beacons[idx][1]):
+                ymin = beacons[idx][1]
+            if ymax < (beacons[idx][1]):
+                ymax = beacons[idx][1]
+
+        
+        xdim = xmax-xmin+1
+        ydim = ymax-ymin+1
+        maps = [['.']*(xdim) for _ in range(ydim)]
+
+        for s,b in zip(sensors,beacons):
+            maps[s[1]-ymin][s[0]-xmin] = 'S'
+            maps[b[1]-ymin][b[0]-xmin] = 'B'
+
+        self.day_14_print_map(maps)
 
 
 
