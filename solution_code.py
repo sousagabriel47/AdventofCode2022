@@ -899,6 +899,7 @@ class Solutions(object):
         xmax = 0
         ymin = 0
         ymax = 0
+        print('Parsing sensores e beacons')
         for idx,_ in enumerate(sensors):
 
             xr = abs(sensors[idx][0]-beacons[idx][0])
@@ -924,15 +925,59 @@ class Solutions(object):
                 ymax = beacons[idx][1]
 
         
+        
         xdim = xmax-xmin+1
         ydim = ymax-ymin+1
+        print(f'Limites - {xdim} e {ydim}')
         maps = [['.']*(xdim) for _ in range(ydim)]
+
+
+        print('Markers')
 
         for s,b in zip(sensors,beacons):
             maps[s[1]-ymin][s[0]-xmin] = 'S'
             maps[b[1]-ymin][b[0]-xmin] = 'B'
 
-        self.day_14_print_map(maps)
+        
+        for idx,s in enumerate(sensors):
+            r = radius[idx]+1
+            for l in range(-r+1,r):
+                c = r-abs(l)
+                for row in range(-c+1,c):
+                    if maps[l+s[1]-ymin][row+s[0]-xmin] == '.':
+                        maps[l+s[1]-ymin][row+s[0]-xmin] = '#'
+
+        print('Mapping')
+        #self.day_14_print_map(maps)
+        y=2000000
+        count = 0
+        for row in maps[y-ymin]:
+            if row == '#':
+                count += 1
+
+        print(f'Part1 : {count}')
+
+    def day_18(self, data):
+        """Solution of day18."""
+        blocks = data.splitlines()
+        blocks = [block.split(',') for block in blocks]
+        faces = {}
+        for block in blocks:
+            faces['_'.join(block)] = 6
+        
+        adj_face = [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]
+
+        for block in blocks:
+            x,y,z = int(block[0]),int(block[1]),int(block[2])
+            block_test = '_'.join(block)
+            for adj in adj_face:
+                adj_test = f'{x+adj[0]}_{y+adj[1]}_{z+adj[2]}'
+                if adj_test in faces:
+                    faces[block_test] -= 1
+        total = 0
+        for face in faces:
+            total += faces[face]
+        print(total)
 
 
 
