@@ -966,18 +966,96 @@ class Solutions(object):
             faces['_'.join(block)] = 6
         
         adj_face = [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]
-
+        xmin = ymin = zmin = 1e10
+        xmax = ymax = zmax = 0
         for block in blocks:
             x,y,z = int(block[0]),int(block[1]),int(block[2])
+            if x > xmax:
+                xmax = x
+            if y > ymax:
+                ymax = y
+            if z > zmax:
+                zmax = z
+            if x < xmin:
+                xmin = x
+            if y < ymin:
+                ymin = y
+            if z < zmin:
+                zmin = z
+            
             block_test = '_'.join(block)
             for adj in adj_face:
                 adj_test = f'{x+adj[0]}_{y+adj[1]}_{z+adj[2]}'
                 if adj_test in faces:
                     faces[block_test] -= 1
-        total = 0
+        total1 = 0
         for face in faces:
-            total += faces[face]
-        print(total)
+            total1 += faces[face]
+        print('Part1', total1)
+        blank = {}
+        for x in range(xmin-1,xmax+1):
+            for y in range(ymin-1,ymax+1):
+                for z in range(zmin-1,zmax+1):
+                    coor = f'{x}_{y}_{z}'
+                    
+                    if coor not in faces:
+                        limits = 0
+                        for xtest in range(x,xmax+1):
+                            coortest = f'{xtest}_{y}_{z}'
+                            if coortest in faces:
+                                limits += 1
+                                break
+                        
+                        for xtest in range(x,xmin-1,-1):
+                            coortest = f'{xtest}_{y}_{z}'
+                            if coortest in faces:
+                                limits += 1
+                                break
+
+                        for ytest in range(y,ymax+1):
+                            coortest = f'{x}_{ytest}_{z}'
+                            if coortest in faces:
+                                limits += 1
+                                break
+                        
+                        for ytest in range(y,ymin-1,-1):
+                            coortest = f'{x}_{ytest}_{z}'
+                            if coortest in faces:
+                                limits += 1
+                                break
+                        for ztest in range(z,zmax+1):
+                            coortest = f'{x}_{y}_{ztest}'
+                            if coortest in faces:
+                                limits += 1
+                                break
+                        
+                        for ztest in range(z,zmin-1,-1):
+                            coortest = f'{x}_{y}_{ztest}'
+                            if coortest in faces:
+                                limits += 1
+                                break
+                        if limits == 6:
+                            blank[coor] = limits
+
+        for coord in blank:
+            block = coord.split('_')
+            x,y,z = int(block[0]),int(block[1]),int(block[2])
+            
+            block_test = '_'.join(block)
+            for adj in adj_face:
+                adj_test = f'{x+adj[0]}_{y+adj[1]}_{z+adj[2]}'
+                if adj_test in blank:
+                    blank[block_test] -= 1
+        
+        total2 = 0
+        for face in blank:
+            print(face, blank[face])
+            total2 += blank[face]
+        print('Part2', total1-total2)
+
+        
+
+
 
 
 
