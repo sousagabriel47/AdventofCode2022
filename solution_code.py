@@ -1064,8 +1064,101 @@ class Solutions(object):
                 total2 += blank[face]
         print('Part2', total1-total2)
 
+    def day_19(self, data):
+        """Solution of day19."""
+        data = data.splitlines()
+        data = [bprint.split('.') for bprint in data]
         
+        blueprints = []
+        for bprint in data:
+            cost = {}
+            cost['ore'] = [int(bprint[0].split()[-2]),0,0,0]
+            cost['clay'] = [int(bprint[1].split()[-2]),0,0,0]
+            cost['obsidian'] = [int(bprint[2].split()[-5]),int(bprint[0].split()[-2]),0,0]
+            cost['geode'] = [int(bprint[3].split()[-5]),0,int(bprint[0].split()[-2]),0]
+            blueprints.append(cost)
 
+        p = ['geode', 'obsidian', 'clay', 'ore']
+
+        for blueprint in blueprints:
+            inventario = [1,0,0,0]
+            carteira = [0,0,0,0]
+            seq = {'ore': 0, 'clay': 0, 'obsidian': 0, 'geode': 0}
+            compra = {'ore': 0, 'clay': 0, 'obsidian': 0, 'geode': 0}
+            for t in range(24):
+                #compra
+                for item in p:
+                    if all(c >= b for c,b in zip(carteira,blueprint[item])) and seq[item]<2:
+                        carteira = [b-c for c,b in zip(carteira,blueprint[item])]
+                        compra[item] = 1
+                        for z in seq:
+                            if z == item:
+                                seq[z] += 1
+                            else:
+                                seq[z] = 0
+                        break
+                #coleta
+                carteira = [c+i for c,i in zip(carteira,inventario)]
+                #atualizacao invetario
+                for idx,item in enumerate(compra):
+                    inventario[idx] += compra[item]
+                print(f'{t+1}\t{carteira}\t{inventario}\t{seq}')
+
+
+
+    def day_19_2(self, data):
+        minutes = data.split('\n\n')
+
+
+        cost = {
+            'ore': [4,0,0,0],
+            'clay': [2,0,0,0],
+            'obsidian': [3,14,0,0],
+            'geode': [2,0,7,0]
+        }
+        
+        gerado = []
+        for minute in minutes:
+            inventario = [0,0,0,0]
+            carteira = [0,0,0,0]
+            compra = [0,0,0,0]
+            params = minute.splitlines()
+            i = params[0].split()[2]
+            for itens in params[1:]:
+                itens_s = itens.split()
+                #robos
+                if itens_s[1] == 'ore-collecting':
+                    inventario[0] = int(itens_s[0])
+                if itens_s[1] == 'clay-collecting':
+                    inventario[1] = int(itens_s[0])
+                if itens_s[1] == 'obsidian-collecting':
+                    inventario[2] = int(itens_s[0])
+                if itens_s[1] == 'geode-cracking':
+                    inventario[3] = int(itens_s[0])
+                #carteira
+                if itens_s[-1] == 'ore.':
+                    carteira[0] = int(itens_s[-2])
+                if itens_s[-1] == 'clay.':
+                    carteira[1] = int(itens_s[-2])
+                if itens_s[-1] == 'obsidian.':
+                    carteira[2] = int(itens_s[-2])
+                if itens_s[-1] == 'geodes.':
+                    carteira[3] = int(itens_s[-3])
+                #custos
+                if all(i1 >= i2 for i1,i2 in zip(carteira,cost['ore'])):
+                    compra[0] = 1
+                if all(i1 >= i2 for i1,i2 in zip(carteira,cost['clay'])):
+                    compra[1] = 1
+                if all(i1 >= i2 for i1,i2 in zip(carteira,cost['obsidian'])):
+                    compra[2] = 1
+                if all(i1 >= i2 for i1,i2 in zip(carteira,cost['geode'])):
+                    compra[3] = 1
+
+                #gerado
+                if 'building' in itens_s:
+                    gerado.append(itens_s[-2])
+
+            print(f'{i}\t{carteira}\t{inventario}\t{compra}\t{gerado}')
 
 
 
