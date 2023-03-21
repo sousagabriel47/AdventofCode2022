@@ -993,6 +993,7 @@ class Solutions(object):
             total1 += faces[face]
         print('Part1', total1)
         blank = {}
+        in_out = {}
         for x in range(xmin-1,xmax+1):
             for y in range(ymin-1,ymax+1):
                 for z in range(zmin-1,zmax+1):
@@ -1049,8 +1050,18 @@ class Solutions(object):
         
         total2 = 0
         for face in blank:
-            print(face, blank[face])
-            total2 += blank[face]
+            adj_count = 0
+            block = face.split('_')
+            x,y,z = int(block[0]),int(block[1]),int(block[2])
+            block_test = '_'.join(block)
+            for adj in adj_face:
+                adj_test = f'{x+adj[0]}_{y+adj[1]}_{z+adj[2]}'
+                if adj_test in faces:
+                    adj_count += 1
+
+            
+            if blank[face] == adj_count:
+                total2 += blank[face]
         print('Part2', total1-total2)
 
         
