@@ -1074,35 +1074,82 @@ class Solutions(object):
             cost = {}
             cost['ore'] = [int(bprint[0].split()[-2]),0,0,0]
             cost['clay'] = [int(bprint[1].split()[-2]),0,0,0]
-            cost['obsidian'] = [int(bprint[2].split()[-5]),int(bprint[0].split()[-2]),0,0]
-            cost['geode'] = [int(bprint[3].split()[-5]),0,int(bprint[0].split()[-2]),0]
+            cost['obsidian'] = [int(bprint[2].split()[-5]),int(bprint[2].split()[-2]),0,0]
+            cost['geode'] = [int(bprint[3].split()[-5]),0,int(bprint[3].split()[-2]),0]
             blueprints.append(cost)
 
-        p = ['geode', 'obsidian', 'clay', 'ore']
+        robots = ['ore','clay','obsidian','geode']
 
-        for blueprint in blueprints:
-            inventario = [1,0,0,0]
+        for irobot,blueprint in enumerate(blueprints):
+            t = 24
             carteira = [0,0,0,0]
-            seq = {'ore': 0, 'clay': 0, 'obsidian': 0, 'geode': 0}
-            compra = {'ore': 0, 'clay': 0, 'obsidian': 0, 'geode': 0}
-            for t in range(24):
-                #compra
-                for item in p:
-                    if all(c >= b for c,b in zip(carteira,blueprint[item])) and seq[item]<2:
-                        carteira = [b-c for c,b in zip(carteira,blueprint[item])]
-                        compra[item] = 1
-                        for z in seq:
-                            if z == item:
-                                seq[z] += 1
-                            else:
-                                seq[z] = 0
-                        break
-                #coleta
-                carteira = [c+i for c,i in zip(carteira,inventario)]
-                #atualizacao invetario
-                for idx,item in enumerate(compra):
-                    inventario[idx] += compra[item]
-                print(f'{t+1}\t{carteira}\t{inventario}\t{seq}')
+            inventario = {}
+            for robot in robots:
+                inventario[robot] = 0
+            inventario['ore'] = 1
+            
+            fila = [(carteira,inventario,t)]
+            bestG = 0
+            count = 0
+            tInicial = 24
+            print(f'#### {irobot}')
+            print(f'#### {blueprint}')
+            tLimite = {}
+            custoOb = blueprint['geode'][2]
+            custoC = blueprint['obsidian'][1]
+            total = 0
+            for n in range(custoOb*2):
+                total += n
+                if total > custoOb:
+                    break
+            tLimite['obsidian'] = n
+            
+            total = 0
+            for n in range(custoC*2):
+                total += n
+                if total > custoC:
+                    break
+            tLimite['clay'] = tLimite['obsidian'] + n
+            print(tLimite)
+            while fila:
+                cAtual,iAtual,tAtual = fila.pop(0)
+                filaTest = []
+
+                if irobot==0:
+                    print(cAtual,iAtual,24-tAtual)
+                if tAtual == 0:
+                    continue
+
+                if cAtual[3] > bestG:
+                    bestG = cAtual[3]
+                # compra de robos
+                for robot in robots:
+                    if all(cartItem >= costItem for cartItem,costItem in zip(cAtual,blueprint[robot])):
+                        novaCart = [cartItem - costItem for cartItem,costItem in zip(cAtual,blueprint[robot])]
+                        #atualiza carteria com coleta
+                        for ix,coleta_robot in enumerate(robots):
+                            novaCart[ix] = novaCart[ix] + iAtual[coleta_robot]
+                        novoInvent = deepcopy(iAtual)
+                        novoInvent[robot] += 1
+                        filaTest.append((novaCart,novoInvent,tAtual-1))
+                #coleta de itens sem robos novos
+                novaCart = [0,0,0,0]
+                for ix,robot in enumerate(robots):
+                    novaCart[ix] = cAtual[ix] + iAtual[robot]
+                filaTest.append((novaCart,iAtual,tAtual-1))
+
+                for novo in filaTest:
+                    cAtual,iAtual,tAtual = novo
+                    if (tAtual < tLimite['obsidian']) and (iAtual['obsidian'] == 0):
+                        continue
+                    elif (tAtual < tLimite['clay']) and (iAtual['clay'] == 0):
+                        continue
+                    else:
+                        fila += [novo]
+                count += len(filaTest)
+                if not count % 100000:
+                    print(f'{count} {tAtual}  {bestG}')
+                        
 
 
 
