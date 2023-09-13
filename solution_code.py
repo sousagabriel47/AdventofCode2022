@@ -1082,7 +1082,9 @@ class Solutions(object):
 
         for irobot,blueprint in enumerate(blueprints):
             t = 24
-            carteira = [0,0,0,0]
+            carteira = {}
+            for robot in robots:
+                carteira[robot] = 0
             inventario = {}
             for robot in robots:
                 inventario[robot] = 0
@@ -1094,118 +1096,38 @@ class Solutions(object):
             tInicial = 24
             print(f'#### {irobot}')
             print(f'#### {blueprint}')
-            tLimite = {}
-            custoOb = blueprint['geode'][2]
-            custoC = blueprint['obsidian'][1]
-            total = 0
-            for n in range(custoOb*2):
-                total += n
-                if total > custoOb:
-                    break
-            tLimite['obsidian'] = n
-            
-            total = 0
-            for n in range(custoC*2):
-                total += n
-                if total > custoC:
-                    break
-            tLimite['clay'] = tLimite['obsidian'] + n
-            print(tLimite)
             while fila:
-                cAtual,iAtual,tAtual = fila.pop(0)
-                filaTest = []
+                cartAtual,invAtual,tAtual = fila.pop(0)
 
-                if irobot==0:
-                    print(cAtual,iAtual,24-tAtual)
                 if tAtual == 0:
                     continue
+    
+    def day_20(self, data):
+        """Solution for day20."""
+        order = [int(n) for n in data.splitlines()] 
+        out = [int(n) for n in data.splitlines()]
+        size = len(order)
+        print(out)
+        for el in order:
+            idxNow = out.index(el)
 
-                if cAtual[3] > bestG:
-                    bestG = cAtual[3]
-                # compra de robos
-                for robot in robots:
-                    if all(cartItem >= costItem for cartItem,costItem in zip(cAtual,blueprint[robot])):
-                        novaCart = [cartItem - costItem for cartItem,costItem in zip(cAtual,blueprint[robot])]
-                        #atualiza carteria com coleta
-                        for ix,coleta_robot in enumerate(robots):
-                            novaCart[ix] = novaCart[ix] + iAtual[coleta_robot]
-                        novoInvent = deepcopy(iAtual)
-                        novoInvent[robot] += 1
-                        filaTest.append((novaCart,novoInvent,tAtual-1))
-                #coleta de itens sem robos novos
-                novaCart = [0,0,0,0]
-                for ix,robot in enumerate(robots):
-                    novaCart[ix] = cAtual[ix] + iAtual[robot]
-                filaTest.append((novaCart,iAtual,tAtual-1))
+            if el >= 0:
+                idxFut = (idxNow + el) % size
+                out.insert(idxFut+1, el)
 
-                for novo in filaTest:
-                    cAtual,iAtual,tAtual = novo
-                    if (tAtual < tLimite['obsidian']) and (iAtual['obsidian'] == 0):
-                        continue
-                    elif (tAtual < tLimite['clay']) and (iAtual['clay'] == 0):
-                        continue
-                    else:
-                        fila += [novo]
-                count += len(filaTest)
-                if not count % 100000:
-                    print(f'{count} {tAtual}  {bestG}')
-                        
+            else:
+                idxFut = (idxNow + el - 1) % (-size)
+                if idxFut < 0:
+                    idxFut += size
+                out.insert(idxFut, el)
+
+            if idxFut < idxNow:
+                idxNow += 1
+               
+            out.pop(idxNow)
+            print(el,"\t", idxNow,idxFut, '\t',['{:>3}'.format(l) for l in out])
 
 
-
-    def day_19_2(self, data):
-        minutes = data.split('\n\n')
-
-
-        cost = {
-            'ore': [4,0,0,0],
-            'clay': [2,0,0,0],
-            'obsidian': [3,14,0,0],
-            'geode': [2,0,7,0]
-        }
-        
-        gerado = []
-        for minute in minutes:
-            inventario = [0,0,0,0]
-            carteira = [0,0,0,0]
-            compra = [0,0,0,0]
-            params = minute.splitlines()
-            i = params[0].split()[2]
-            for itens in params[1:]:
-                itens_s = itens.split()
-                #robos
-                if itens_s[1] == 'ore-collecting':
-                    inventario[0] = int(itens_s[0])
-                if itens_s[1] == 'clay-collecting':
-                    inventario[1] = int(itens_s[0])
-                if itens_s[1] == 'obsidian-collecting':
-                    inventario[2] = int(itens_s[0])
-                if itens_s[1] == 'geode-cracking':
-                    inventario[3] = int(itens_s[0])
-                #carteira
-                if itens_s[-1] == 'ore.':
-                    carteira[0] = int(itens_s[-2])
-                if itens_s[-1] == 'clay.':
-                    carteira[1] = int(itens_s[-2])
-                if itens_s[-1] == 'obsidian.':
-                    carteira[2] = int(itens_s[-2])
-                if itens_s[-1] == 'geodes.':
-                    carteira[3] = int(itens_s[-3])
-                #custos
-                if all(i1 >= i2 for i1,i2 in zip(carteira,cost['ore'])):
-                    compra[0] = 1
-                if all(i1 >= i2 for i1,i2 in zip(carteira,cost['clay'])):
-                    compra[1] = 1
-                if all(i1 >= i2 for i1,i2 in zip(carteira,cost['obsidian'])):
-                    compra[2] = 1
-                if all(i1 >= i2 for i1,i2 in zip(carteira,cost['geode'])):
-                    compra[3] = 1
-
-                #gerado
-                if 'building' in itens_s:
-                    gerado.append(itens_s[-2])
-
-            print(f'{i}\t{carteira}\t{inventario}\t{compra}\t{gerado}')
 
 
 
