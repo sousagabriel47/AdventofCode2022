@@ -2,7 +2,7 @@
 import math
 from copy import deepcopy
 import sys
-
+from collections import deque
 class Solutions(object):
     """One funciton per day."""
     def __init__(self):
@@ -1079,12 +1079,13 @@ class Solutions(object):
             cost['obsidian'] = [int(bprint[2].split()[-5]),int(bprint[2].split()[-2]),0,0]
             cost['geode'] = [int(bprint[3].split()[-5]),0,int(bprint[3].split()[-2]),0]
             blueprints.append(cost)
-
+        
         robots = ['ore','clay','obsidian','geode']
         q = []
         for irobot,blueprint in enumerate(blueprints):
             t = 32
             carteira = []
+            print(blueprint)
             for robot in robots:
                 carteira.append(0)
             inventario = []
@@ -1092,39 +1093,40 @@ class Solutions(object):
                 inventario.append(0)
             inventario[0] = 1
             
-            fila = [[carteira,inventario,t]]
+            fila = deque([carteira + inventario +[t]])
             print(f'{irobot}')
             print(f'{irobot}', end='')
 
             maxOreCost = max([custo[0] for _,custo in blueprint.items()])
             maxClayCost = max([custo[1] for _,custo in blueprint.items()])
             maxObsCost = max([custo[2] for _,custo in blueprint.items()])
-            
+            maxCost = [maxOreCost, maxOreCost, maxObsCost, 999]
             caminho = set()
             maxGeode = 0
             it = 0
             dup = 0
-            maxGeodeFila = []
             while fila:
-                cartAtual,invAtual,tAtual = fila.pop(0)
-                cartOre, cartClay, cartObsidian, cartGeode = cartAtual 
-                rOre, rClay, rObsidian, rGeode = invAtual
+                a = fila.popleft()
+                cartOre, cartClay, cartObsidian, cartGeode = a[0:4] 
+                rOre, rClay, rObsidian, rGeode = a[4:8]
+                tAtual = a[8]
                 it += 1
                     
-
+                
                 maxGeode = max(cartGeode, maxGeode)
 
                 if tAtual == 0:
-                    if cartAtual[3]:
-                        maxGeodeFila.append([cartAtual,invAtual,tAtual])
                     continue
-
+                pulaCompra = [0,0,0,0]
                 if rOre > maxOreCost:
                     rOre = maxOreCost
+                    pulaCompra[0] = 1
                 if rClay > maxClayCost:
                     rClay = maxClayCost
+                    pulaCompra[1] = 1
                 if rObsidian > maxObsCost:
                     rObsidian = maxObsCost
+                    pulaCompra[2] = 1
 
                 if cartOre >= tAtual*maxOreCost-rOre*(tAtual-1):
                     cartOre = tAtual*maxOreCost - rOre*(tAtual-1)
@@ -1134,8 +1136,10 @@ class Solutions(object):
                     cartObsidian =  tAtual*maxObsCost - rObsidian*(tAtual-1)
                 #atualiza lista de inventario atual
                 invAtual = [rOre, rClay, rObsidian, rGeode]
-                if not it%10000:
-                    print(len(fila), cartOre, cartClay, cartObsidian, cartGeode, rOre, rClay, rObsidian, rGeode, tAtual)
+
+                #if not it%100000:
+                #    print(len(fila), maxGeode, tAtual)
+
                 if (cartOre, cartClay, cartObsidian, cartGeode, rOre, rClay, rObsidian, rGeode, tAtual) in caminho:
                     dup += 1
                     continue
@@ -1146,7 +1150,7 @@ class Solutions(object):
                             cartClay + rClay,
                             cartObsidian + rObsidian,
                             cartGeode + rGeode]
-                fila.append([novaCart, invAtual, tAtual-1])
+                fila.append(novaCart + invAtual + [tAtual-1])
                 #comprando
                 for id, robot in enumerate(robots):
                     if (cartOre >= blueprint[robot][0]
@@ -1161,7 +1165,7 @@ class Solutions(object):
                         #coleta do inventario anterior a compra
                         novaCart = [cart+inv for cart,inv in zip(cartPosCompa,invAtual)]                        
                         novoIvent = [inv+1 if id == idInv else inv for idInv,inv in enumerate(invAtual)]
-                        fila.append([novaCart, novoIvent, tAtual-1])
+                        fila.append(novaCart + novoIvent +[tAtual-1])
             qualidade = maxGeode * (irobot+1)
             q.append(qualidade)
             print(f'| Qualidade: {qualidade}', end='')
