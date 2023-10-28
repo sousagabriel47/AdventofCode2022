@@ -1176,16 +1176,19 @@ class Solutions(object):
         order = [int(n) for n in data.splitlines()] 
         out = [int(n) for n in data.splitlines()]
         size = len(order)
-        print(out)
-        for el in order:
-            idxNow = out.index(el)
+        #print(0,"\t", 0, 0, '\t',['{:>3}'.format(l) for l in out])
 
+        #print('_',"\t", '_', '_', '\t',['{:>3}'.format(l) for l in test_out[0]])
+        #print(0,"\t", 0, 0, '\t',['{:>3}'.format(l) for l in out])
+        for id, el in enumerate(order):
+            idxNow = out.index(el)
+            
             if el >= 0:
                 idxFut = (idxNow + el) % size
                 out.insert(idxFut+1, el)
 
             else:
-                idxFut = (idxNow + el - 1) % (-size)
+                idxFut = (idxNow + el) % (-size)
                 if idxFut < 0:
                     idxFut += size
                 out.insert(idxFut, el)
@@ -1194,9 +1197,19 @@ class Solutions(object):
                 idxNow += 1
                
             out.pop(idxNow)
-            print(el,"\t", idxNow,idxFut, '\t',['{:>3}'.format(l) for l in out])
+            #print('*'*70)
+            #print('_',"\t", '_', '_', '\t',['{:>3}'.format(l) for l in test_out[id+1]])
+            #print(el,"\t", idxNow,idxFut, '\t',['{:>3}'.format(l) for l in out], all([t==o for o, t in zip(out,test_out[id+1])]))
 
 
+        zero_id = out.index(0)
+        
+        with open('out20','w') as f:
+            for el in out:
+                print(el, file=f)
+
+        print(f'{out[(1000+zero_id)%size]} {out[(2000+zero_id)%size]} {out[(3000+zero_id)%size]}')
+        print(f'{out[(1000+zero_id)%size] + out[(2000+zero_id)%size]+ out[(3000+zero_id)%size]}')
 
 
 
