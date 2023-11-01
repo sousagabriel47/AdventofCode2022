@@ -1204,7 +1204,7 @@ class Solutions(object):
 
         for idx, el in enumerate(out):
             if el[1] == 0:
-                zero_id = idx+1
+                zero_id = idx
                 break
                 
         
@@ -1213,8 +1213,8 @@ class Solutions(object):
                 print(el, file=f)
 
         print(zero_id)
-        print(f'{out[(1000+zero_id)%size][0]} {out[(2000+zero_id)%size][0]} {out[(3000+zero_id)%size][0]}')
-        print(f'{out[(1000+zero_id)%size][0] + out[(2000+zero_id)%size][0]+ out[(3000+zero_id)%size][0]}')
+        print(f'{out[(1000+zero_id)%size][1]} {out[(2000+zero_id)%size][1]} {out[(3000+zero_id)%size][1]}')
+        print(f'{out[(1000+zero_id)%size][1] + out[(2000+zero_id)%size][1]+ out[(3000+zero_id)%size][1]}')
 
 
 
