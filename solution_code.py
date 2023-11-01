@@ -1173,43 +1173,48 @@ class Solutions(object):
     
     def day_20(self, data):
         """Solution for day20."""
-        order = [int(n) for n in data.splitlines()] 
-        out = [int(n) for n in data.splitlines()]
+        order = [[id,int(n),False] for id, n in enumerate(data.splitlines())] 
+        out = deepcopy(order)
         size = len(order)
         #print(0,"\t", 0, 0, '\t',['{:>3}'.format(l) for l in out])
 
         #print('_',"\t", '_', '_', '\t',['{:>3}'.format(l) for l in test_out[0]])
         #print(0,"\t", 0, 0, '\t',['{:>3}'.format(l) for l in out])
-        for id, el in enumerate(order):
-            idxNow = out.index(el)
-            
+        for id, el, _ in order:
+            idxNow = out.index([id,el,False])
+            #marcar para visitado
+            out[idxNow] = [id,el,True]
+
             if el >= 0:
                 idxFut = (idxNow + el) % size
-                out.insert(idxFut+1, el)
+                out.insert(idxFut+1, [id,el,False])
 
             else:
                 idxFut = (idxNow + el) % (-size)
                 if idxFut < 0:
                     idxFut += size
-                out.insert(idxFut, el)
-
-            if idxFut < idxNow:
-                idxNow += 1
+                out.insert(idxFut, [id,el,False])
                
-            out.pop(idxNow)
+            out = [[i,e,False] for i,e,visit in out if not visit]
+
             #print('*'*70)
             #print('_',"\t", '_', '_', '\t',['{:>3}'.format(l) for l in test_out[id+1]])
             #print(el,"\t", idxNow,idxFut, '\t',['{:>3}'.format(l) for l in out], all([t==o for o, t in zip(out,test_out[id+1])]))
 
 
-        zero_id = out.index(0)
+        for idx, el in enumerate(out):
+            if el[1] == 0:
+                zero_id = idx+1
+                break
+                
         
         with open('out20','w') as f:
             for el in out:
                 print(el, file=f)
 
-        print(f'{out[(1000+zero_id)%size]} {out[(2000+zero_id)%size]} {out[(3000+zero_id)%size]}')
-        print(f'{out[(1000+zero_id)%size] + out[(2000+zero_id)%size]+ out[(3000+zero_id)%size]}')
+        print(zero_id)
+        print(f'{out[(1000+zero_id)%size][0]} {out[(2000+zero_id)%size][0]} {out[(3000+zero_id)%size][0]}')
+        print(f'{out[(1000+zero_id)%size][0] + out[(2000+zero_id)%size][0]+ out[(3000+zero_id)%size][0]}')
 
 
 
