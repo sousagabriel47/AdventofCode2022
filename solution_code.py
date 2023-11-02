@@ -1176,10 +1176,7 @@ class Solutions(object):
         order = [[id,int(n),False] for id, n in enumerate(data.splitlines())] 
         out = deepcopy(order)
         size = len(order)
-        #print(0,"\t", 0, 0, '\t',['{:>3}'.format(l) for l in out])
 
-        #print('_',"\t", '_', '_', '\t',['{:>3}'.format(l) for l in test_out[0]])
-        #print(0,"\t", 0, 0, '\t',['{:>3}'.format(l) for l in out])
         for id, el, _ in order:
 
             if el==0:                
@@ -1188,19 +1185,25 @@ class Solutions(object):
             idxNow = out.index([id,el,False])
             #marcar para visitado
             out[idxNow] = [id,el,True]
+            print('-'*80)
+            print('\t\t',end='')
+            for i,e,_ in out:
+                print(f'{i}_{e}', end='\t')
+            print()
+            print(idxNow, end=' -> ')
 
-            if (idxNow + el) > 0:
-                idxFut =  (idxNow + el) % (size-1) + 1
+
+            if el > 0:
+                idxFut =  (idxNow + el) % size + 1
             else:
-                idxFut =  (idxNow + el) % (-size+1)
+                idxFut =  (idxNow + el) % (-size)
 
             out.insert(idxFut, [id,el, False])
-               
+            print(idxFut, end='\t\t')   
             out = [[i,e,False] for i,e,visit in out if not visit]
-
-            #print('*'*70)
-            #print('_',"\t", '_', '_', '\t',['{:>3}'.format(l) for l in test_out[id+1]])
-            #print(el,"\t", idxNow,idxFut, '\t',['{:>3}'.format(l) for l in out], all([t==o for o, t in zip(out,test_out[id+1])]))
+            for i,e,_ in out:
+                print(f'{i}_{e}', end='\t')
+            print()
 
 
         for idx, el in enumerate(out):
@@ -1209,6 +1212,10 @@ class Solutions(object):
                 break
                 
         
+        for id, el, _ in out:
+            print(el, end=' ')
+        print()
+
         with open('out20','w') as f:
             for el in out:
                 print(el, file=f)
