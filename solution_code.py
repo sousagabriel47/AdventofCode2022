@@ -1181,19 +1181,20 @@ class Solutions(object):
         #print('_',"\t", '_', '_', '\t',['{:>3}'.format(l) for l in test_out[0]])
         #print(0,"\t", 0, 0, '\t',['{:>3}'.format(l) for l in out])
         for id, el, _ in order:
+
+            if el==0:                
+                continue
+
             idxNow = out.index([id,el,False])
             #marcar para visitado
             out[idxNow] = [id,el,True]
 
-            if el >= 0:
-                idxFut = (idxNow + el) % size
-                out.insert(idxFut+1, [id,el,False])
-
+            if (idxNow + el) > 0:
+                idxFut =  (idxNow + el) % (size-1) + 1
             else:
-                idxFut = (idxNow + el) % (-size)
-                if idxFut < 0:
-                    idxFut += size
-                out.insert(idxFut, [id,el,False])
+                idxFut =  (idxNow + el) % (-size+1)
+
+            out.insert(idxFut, [id,el, False])
                
             out = [[i,e,False] for i,e,visit in out if not visit]
 
