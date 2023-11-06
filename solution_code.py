@@ -1226,6 +1226,59 @@ class Solutions(object):
         print(f'{out[(1000+zero_id)%size][1]} {out[(2000+zero_id)%size][1]} {out[(3000+zero_id)%size][1]}')
         print(f'{out[(1000+zero_id)%size][1] + out[(2000+zero_id)%size][1]+ out[(3000+zero_id)%size][1]}')
 
+    def day_21(self, data):
+        """Solution for AoC2022 day21."""
+
+        find_monk = 'root'
+
+        equations = data.splitlines()
+        equations = [eq.replace(':','').split() for eq in equations]
+        numbers = {eq[0] : int(eq[1]) for eq in equations if eq[1].isnumeric() and eq[0] != 'humn'}
+
+
+        expressoes = {eq[0] : ' '.join(eq[1:]) for eq in equations if not eq[1].isnumeric()}
+
+        root_vars = [expressoes['root'].split()[0],expressoes['root'].split()[2]]
+
+        print(expressoes['root'])
+
+
+        for var_root in root_vars:
+            exp_root = var_root
+            f_var = []
+            f_var.append(var_root)
+            print(f'{exp_root}: ', end='')
+            while(f_var):
+
+                for var,exp in expressoes.items():
+                    if var == 'root':
+                        continue
+                    if len(f_var):
+                        if  f_var[0] not in expressoes.keys():
+                            f_var.pop(0)
+                        elif f_var[0] == var:
+                            
+                            var1 = exp.split()[0]
+                            var2 = exp.split()[2]
+                            exp_root = exp_root.replace(f_var[0], f'({exp})')
+                            f_var.append(var1)
+                            f_var.append(var2)
+                            f_var.pop(0)
+            print(exp_root)
+
+        """
+        while(len(numbers) < len(equations)):
+            for line in equations:
+                if line[0] in numbers.keys():
+                    continue
+                else:
+                    if line[1] in numbers.keys() and line[3] in numbers.keys():
+                        a = numbers[line[1]]
+                        op = line[2]
+                        b = numbers[line[3]]
+                        numbers[line[0]] = eval(f'int({a}{op}{b})')
+        """       
+        #print(numbers[find_monk])
 
 
 
