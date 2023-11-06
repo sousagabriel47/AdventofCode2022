@@ -3,6 +3,7 @@ import math
 from copy import deepcopy
 import sys
 from collections import deque
+from sympy import sympify, solve, Symbol
 class Solutions(object):
     """One funciton per day."""
     def __init__(self):
@@ -1242,12 +1243,12 @@ class Solutions(object):
 
         print(expressoes['root'])
 
-
+        humn_exp = ''
+        num_exp = ''
         for var_root in root_vars:
             exp_root = var_root
             f_var = []
             f_var.append(var_root)
-            print(f'{exp_root}: ', end='')
             while(f_var):
 
                 for var,exp in expressoes.items():
@@ -1255,6 +1256,9 @@ class Solutions(object):
                         continue
                     if len(f_var):
                         if  f_var[0] not in expressoes.keys():
+                            if f_var[0] != 'humn':
+                                exp_root = exp_root.replace(f_var[0], f'{numbers[f_var[0]]}')
+
                             f_var.pop(0)
                         elif f_var[0] == var:
                             
@@ -1264,7 +1268,15 @@ class Solutions(object):
                             f_var.append(var1)
                             f_var.append(var2)
                             f_var.pop(0)
-            print(exp_root)
+
+            if 'humn' in exp_root:
+                humn_exp = exp_root
+            else:    
+                num_exp = str(eval(exp_root))
+
+        humn = Symbol("humn")
+        print(solve(sympify(f'{humn_exp} - {num_exp}', evaluate=True)))
+        
 
         """
         while(len(numbers) < len(equations)):
