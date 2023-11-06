@@ -1173,38 +1173,42 @@ class Solutions(object):
     
     def day_20(self, data):
         """Solution for day20."""
-        order = [[id,int(n),False] for id, n in enumerate(data.splitlines())] 
+        pt = 2
+        key = 811589153
+
+        order = [[id,int(n) * (key if pt==2 else 1),False] for id, n in enumerate(data.splitlines())] 
         out = deepcopy(order)
         size = len(order)
+        for r in range(10 if pt==2 else 1):
+            for id, el, _ in order:
 
-        for id, el, _ in order:
+                if el==0:                
+                    continue
 
-            if el==0:                
-                continue
+                idxNow = out.index([id,el,False])
+                next = el + idxNow
 
-            idxNow = out.index([id,el,False])
-            #marcar para visitado
-            out[idxNow] = [id,el,True]
-            print('-'*80)
-            print('\t\t',end='')
-            for i,e,_ in out:
-                print(f'{i}_{e}', end='\t')
-            print()
-            print(idxNow, end=' -> ')
+                if next >= 0:
+                    out.pop(idxNow)
+                    idxFut = next % (size-1)
+                elif next < 0:
+                    out.pop(idxNow)
+                    idxFut = (next + size - 1) % (size-1)
+                
+                out.insert(idxFut, [id,el, False])
+                """
+                print(el, end='\t\t')
+                print(idxNow, end=' -> ')
+                print(idxFut, end='\t\t')   
+                out = [[i,e,False] for i,e,visit in out if not visit]
+                for i,e,_ in out:
+                    print(f'{e}', end='\t')
+                print()
+                """
 
-
-            if el > 0:
-                idxFut =  (idxNow + el) % size + 1
-            else:
-                idxFut =  (idxNow + el) % (-size)
-
-            out.insert(idxFut, [id,el, False])
-            print(idxFut, end='\t\t')   
-            out = [[i,e,False] for i,e,visit in out if not visit]
-            for i,e,_ in out:
-                print(f'{i}_{e}', end='\t')
-            print()
-
+            #for id, el, _ in out:
+            #    print(r, el, end=' ')
+            #print()
 
         for idx, el in enumerate(out):
             if el[1] == 0:
@@ -1212,9 +1216,7 @@ class Solutions(object):
                 break
                 
         
-        for id, el, _ in out:
-            print(el, end=' ')
-        print()
+
 
         with open('out20','w') as f:
             for el in out:
