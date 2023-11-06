@@ -1279,6 +1279,7 @@ class Solutions(object):
         
 
         """
+        #pt 1
         while(len(numbers) < len(equations)):
             for line in equations:
                 if line[0] in numbers.keys():
@@ -1292,7 +1293,20 @@ class Solutions(object):
         """       
         #print(numbers[find_monk])
 
+    def day_22(self, data):
+        """Solution for AoC2022 day22."""
+        comandos_line = data.splitlines()[-1]
+        comandos = []
+        cmd = ''
+        for chr in comandos_line:
+            if chr not in ['R','L']:
+                cmd += chr
+            else:
+                comandos.append(cmd)
+                comandos.append(chr)
+                cmd = ''
 
+        print(comandos)
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
