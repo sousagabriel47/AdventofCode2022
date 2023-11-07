@@ -1296,6 +1296,8 @@ class Solutions(object):
     def day_22(self, data):
         """Solution for AoC2022 day22."""
         comandos_line = data.splitlines()[-1]
+        mapa = data.splitlines()[:-2]
+        mapa = [list(line) for line in mapa]
         comandos = []
         cmd = ''
         for chr in comandos_line:
@@ -1306,7 +1308,41 @@ class Solutions(object):
                 comandos.append(chr)
                 cmd = ''
 
-        print(comandos)
+        #marcar inicio
+        #sistema de coordenadas Y(linhas),X(col) -- > [Y][X]
+        for x,row in enumerate(mapa[0]):
+            if row == '.':
+                p = [0,x]
+                break
+        mapa[p[0]][p[1]] = 's'
+        # inicia +X(direita)
+        dict_versor = {0: [0,1], 1: [-1,0], 2: [0,-1], 3: [1,0]}
+        dict_versor_chr = {0: '>', 1: 'v', 2: '<', 3: '^'}
+        versor = 0
+        for cmd in comandos:
+            if cmd == 'R':
+                if versor < 3:
+                    versor += 1
+                else:
+                    versor = 0
+            elif cmd == 'L':
+                if versor > 0:
+                    versor -= 1
+                else:
+                    versor = 3
+            else:
+                steps = int(cmd)
+                trajeto = ''
+                #direita
+                p_fut = p
+
+
+                
+
+        for line in mapa:
+            for ch in line:
+                print(ch, end='')
+            print()
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
