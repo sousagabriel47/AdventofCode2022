@@ -4,6 +4,7 @@ from copy import deepcopy
 import sys
 from collections import deque
 from sympy import sympify, solve, Symbol
+
 class Solutions(object):
     """One funciton per day."""
     def __init__(self):
@@ -1297,7 +1298,27 @@ class Solutions(object):
         """Solution for AoC2022 day22."""
         comandos_line = data.splitlines()[-1]
         mapa = data.splitlines()[:-2]
-        mapa = [list(line) for line in mapa]
+        mapa1 = [list(line) for line in mapa]
+        max_cols = max(len(line) for line in mapa1)
+        mapa = []
+        for line in mapa1:
+            if len(line) < max_cols:
+                mapa.append(line + [' ']*(max_cols - len(line)))
+            else:
+                mapa.append(line)
+
+        mapa = [line + ['*'] for line in mapa]
+
+        mapa.append(len(mapa[-1]) * ['*'])
+        mapa_desenho = deepcopy(mapa)
+        for i,line in enumerate(mapa_desenho):
+            print(f'{i}\t', end ='')
+            for ch in line:
+                print(ch, end='')
+            print()
+        
+
+
         comandos = []
         cmd = ''
         for chr in comandos_line:
@@ -1310,13 +1331,13 @@ class Solutions(object):
 
         #marcar inicio
         #sistema de coordenadas Y(linhas),X(col) -- > [Y][X]
-        for x,row in enumerate(mapa[0]):
+        for x,row in enumerate(mapa[1]):
             if row == '.':
                 p = [0,x]
                 break
-        mapa[p[0]][p[1]] = 's'
+        # mapa[p[0]][p[1]] = 's'
         # inicia +X(direita)
-        dict_versor = {0: [0,1], 1: [-1,0], 2: [0,-1], 3: [1,0]}
+        dict_versor = {0: [0,1], 1: [1,0], 2: [0,-1], 3: [-1,0]}
         dict_versor_chr = {0: '>', 1: 'v', 2: '<', 3: '^'}
         versor = 0
         for cmd in comandos:
@@ -1335,14 +1356,76 @@ class Solutions(object):
                 trajeto = ''
                 #direita
                 p_fut = p
-
-
                 
+                for _ in range(steps):
+                    p_fut = [p+v for p,v in zip(p_fut,dict_versor[versor])]
 
-        for line in mapa:
+                    if (p_fut[0] < 0 or p_fut[1] < 0 or
+                        mapa[p_fut[0]][p_fut[1]] == '*' or
+                        mapa[p_fut[0]][p_fut[1]] == ' '):
+                        print(p, p_fut, dict_versor_chr[versor])
+                        p_fut = self.day_22_rotacao(mapa, p_fut, versor, dict_versor)
+                        mapa_desenho[p_fut[0]][p_fut[1]] = dict_versor_chr[versor]
+
+                    elif mapa[p_fut[0]][p_fut[1]] == '.':
+                        mapa_desenho[p_fut[0]][p_fut[1]] = dict_versor_chr[versor]
+                        
+                    elif mapa[p_fut[0]][p_fut[1]] == '#':
+                        p_fut = [p-v for p,v in zip(p_fut,dict_versor[versor])]
+                        mapa_desenho[p_fut[0]][p_fut[1]] = dict_versor_chr[versor]
+                        break
+
+                print(p, p_fut, dict_versor_chr[versor])
+                p = p_fut
+        for i,line in enumerate(mapa_desenho):
+            print(f'{i}\t', end ='')
             for ch in line:
                 print(ch, end='')
             print()
+        print(f'day22.1 :{(p[0]+1)*1000 + (p[1]+1)*4 + versor}')
+    
+
+    def day_22_rotacao(self, mapa, p, versor, dict_versor):
+        """Realiza a rotacao(ultrapassou limite) no mapa conforme a line/coluna."""
+        
+        if (versor % 2) == 0:  #linha
+            linha = mapa[p[0]]
+
+            if dict_versor[versor][1] == 1:
+
+                for idx in range(len(linha)):
+                    if linha[idx] == '#':
+                        return [p-v for p,v in zip(p,dict_versor[versor])]
+                    if linha[idx] == '.':
+                        return [p[0], idx]
+            else:
+                for idx in range(len(linha)-1,0,-1):
+                    print(idx)
+                    if linha[idx] == '#':
+                        return [p-v for p,v in zip(p,dict_versor[versor])]
+                    if linha[idx] == '.':
+                        return [p[0], idx]
+
+        else:
+            col = [linha[p[1]] for linha in mapa]
+            if dict_versor[versor][0] == 1:
+                for idx in range(len(col)):
+                    
+                    if col[idx] == '#':
+                        return [p-v for p,v in zip(p,dict_versor[versor])]
+                    if col[idx] == '.':
+                        return [idx, p[1]]
+            else:
+                for idx in range(len(col),0,-1):
+                    
+                    if col[idx] == '#':
+                        return [p-v for p,v in zip(p,dict_versor[versor])]
+                    if col[idx] == '.':
+                        return [idx, p[1]]
+        return p
+                
+
+
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
