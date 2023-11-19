@@ -1414,7 +1414,6 @@ class Solutions(object):
         #         print(ch, end='')
         #     print()
     
-
     def day_22_rotacao(self, mapa, p, versor, dict_versor):
         """Realiza a rotacao(ultrapassou limite) no mapa conforme a line/coluna."""
         
@@ -1454,7 +1453,37 @@ class Solutions(object):
                         return [idx, p[1]]
         return p
                 
+    def day_23(self, data):
+        """Solution day23 od AoC2022."""
+        data = data.splitlines()
+        mapa = [list(line) for line in data]
+        pad = len(mapa)
 
+        mapa = [['.']*pad + line + ['.']*pad for line in mapa]
+
+        line = ['.'] * pad * 3
+        for _ in range(pad):
+            mapa.insert(0,line)
+            mapa.append(line)
+
+        for i,line in enumerate(mapa):
+            print(f'{i}\t', end ='')
+            for ch in line:
+                print(ch, end='')
+            print()
+        
+
+        #enquadramento
+        quadro = []
+        for line in mapa:
+            if '#' in line:
+                quadro.append(line)
+        
+        for i,line in enumerate(quadro):
+            print(f'{i}\t', end ='')
+            for ch in line:
+                print(ch, end='')
+            print()
 
 
 if __name__ == "__main__":
