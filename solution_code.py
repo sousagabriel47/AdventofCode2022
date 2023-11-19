@@ -1375,7 +1375,7 @@ class Solutions(object):
                         mapa_desenho[p_fut[0]][p_fut[1]] = dict_versor_chr[versor]
                         break
 
-                print(p, p_fut, dict_versor_chr[versor])
+                #print(p, p_fut, dict_versor_chr[versor])
                 p = p_fut
         for i,line in enumerate(mapa_desenho):
             print(f'{i}\t', end ='')
