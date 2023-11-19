@@ -1299,6 +1299,7 @@ class Solutions(object):
         comandos_line = data.splitlines()[-1]
         mapa = data.splitlines()[:-2]
         mapa1 = [list(line) for line in mapa]
+        cubo = deepcopy(mapa)
         max_cols = max(len(line) for line in mapa1)
         mapa = []
         for line in mapa1:
@@ -1311,11 +1312,6 @@ class Solutions(object):
 
         mapa.append(len(mapa[-1]) * ['*'])
         mapa_desenho = deepcopy(mapa)
-        for i,line in enumerate(mapa_desenho):
-            print(f'{i}\t', end ='')
-            for ch in line:
-                print(ch, end='')
-            print()
         
 
 
@@ -1363,7 +1359,6 @@ class Solutions(object):
                     if (p_fut[0] < 0 or p_fut[1] < 0 or
                         mapa[p_fut[0]][p_fut[1]] == '*' or
                         mapa[p_fut[0]][p_fut[1]] == ' '):
-                        print(p, p_fut, dict_versor_chr[versor])
                         p_fut = self.day_22_rotacao(mapa, p_fut, versor, dict_versor)
                         mapa_desenho[p_fut[0]][p_fut[1]] = dict_versor_chr[versor]
 
@@ -1377,12 +1372,47 @@ class Solutions(object):
 
                 #print(p, p_fut, dict_versor_chr[versor])
                 p = p_fut
-        for i,line in enumerate(mapa_desenho):
-            print(f'{i}\t', end ='')
-            for ch in line:
-                print(ch, end='')
-            print()
+        #for i,line in enumerate(mapa_desenho):
+        #    print(f'{i}\t', end ='')
+        #    for ch in line:
+        #        print(ch, end='')
+        #    print()
         print(f'day22.1 :{(p[0]+1)*1000 + (p[1]+1)*4 + versor}')
+
+        LADO = 4
+        parsing = [['1'],['2','3','4'],['5','6']]
+
+        
+
+        faces = {}
+        cubo = [line.replace(' ','') for line in cubo]
+        for idx, line in enumerate(cubo):
+            parsing_pag = int(idx/4)
+            for ncols,face in enumerate(parsing[parsing_pag]):
+                if face not in faces.keys():
+                    faces[face] = []
+                faces[face].append(line[ncols*LADO:(ncols+1)*LADO])
+
+
+        cubo_completo = {}
+        for face_id, face in faces.items():
+            for row, line in enumerate(face):
+                for col, ch in enumerate(line):
+                    chave = f'F{face_id}:{row}:{col}'
+                    if ((row > 0 and row < (LADO-1)) and
+                        (col > 0 and col < (LADO-1))):
+                         vetor_t = [face_id]*4
+                    else:
+                        vetor_t = [0]*4
+                    cubo_completo[chave] = [ch,vetor_t]
+
+        print(cubo_completo)
+
+        # for i,line in enumerate(cubo):
+        #     print(f'{i}\t', end ='')
+        #     for ch in line:
+        #         print(ch, end='')
+        #     print()
     
 
     def day_22_rotacao(self, mapa, p, versor, dict_versor):
