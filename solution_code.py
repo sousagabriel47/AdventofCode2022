@@ -1416,7 +1416,7 @@ class Solutions(object):
                     if col[idx] == '.':
                         return [idx, p[1]]
             else:
-                for idx in range(len(col),0,-1):
+                for idx in range(len(col)-1,0,-1):
                     
                     if col[idx] == '#':
                         return [p-v for p,v in zip(p,dict_versor[versor])]
