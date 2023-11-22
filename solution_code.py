@@ -3,7 +3,7 @@ import math
 from copy import deepcopy
 import sys
 from collections import deque
-from sympy import sympify, solve, Symbol
+#from sympy import sympify, solve, Symbol
 
 class Solutions(object):
     """One funciton per day."""
@@ -1466,24 +1466,215 @@ class Solutions(object):
             mapa.insert(0,line)
             mapa.append(line)
 
+        self.day_23_desenha_mapa(mapa)
+
+        dl = len(mapa)
+        dr = len(mapa[0])
+
+        dict_regioes = {'N': [[-1,-1],[-1, 0],[-1, 1]],
+                        'S': [[+1,-1],[+1, 0],[+1, 1]],
+                        'W': [[-1,-1],[ 0,-1],[+1,-1]],
+                        'E': [[-1,+1],[ 0,+1],[+1,+1]]}
+        seq = ['N','S','W','E']
+        for part in [1,2]:
+            elfos = {}
+            for l,line in enumerate(mapa):
+                for r,ch in enumerate(line):
+                    if ch == '#':
+                        elfos[f'e_{l}_{r}'] = {}
+                        elfos[f'e_{l}_{r}']['p'] = [l,r]
+                        elfos[f'e_{l}_{r}']['n'] = [0,0]
+
+            for round in range(10 if part==1 else 10000):
+                next = {}
+
+
+
+                
+                lista_p_elfos = [elfo['p'] for elfo in elfos.values()]
+
+                lmax = max(p[0] for p in lista_p_elfos)
+                lmin = min(p[0] for p in lista_p_elfos)
+                rmax = max(p[1] for p in lista_p_elfos)
+                rmin = min(p[1] for p in lista_p_elfos)
+                print(f'Round {round} {lmin}:{lmax} -- {rmin}:{rmax}')
+                parados = True
+                for elfo,info_elfo in elfos.items():
+                    elfo_l, elfo_r = info_elfo['p']
+                    info_elfo['n'] = info_elfo['p']
+                    #ve se está sozinho
+                    vizinhos = -1
+                    for l in [1,0,-1]:
+                        for r in [1,0,-1]:
+                            if [elfo_l+l, elfo_r+r] in lista_p_elfos:
+                                vizinhos += 1
+                    if vizinhos:
+                        for tent in range(4):
+                            regiao = dict_regioes[seq[(round+tent)%4]] 
+                            livres = 0
+                            for l,r in regiao:
+                                if [elfo_l+l, elfo_r+r] not in lista_p_elfos:
+                                    livres += 1
+                            
+                            if livres == 3:
+                                l,r = regiao[1]
+                                info_elfo['n'] = [l + elfo_l, r + elfo_r]
+                                next_p = f'{l + elfo_l}_{r + elfo_r}'
+                                if next_p not in next.keys():
+                                    next[next_p] = 0
+                                next[next_p] += 1
+                                parados = False
+                                break
+                for elfo,info_elfo in elfos.items():
+
+                    l,r = info_elfo['n']
+                    if info_elfo['p'] != info_elfo['n']:
+                        if next[f'{l}_{r}'] == 1:
+                            elfos[elfo]['p'] = [l,r]
+                            elfos[elfo]['n'] = [0,0]
+                        else:
+                            elfos[elfo]['n'] = [0,0]
+
+                #print(round)
+                #self.day_23_desenha_mapa(self.day_23_marca_mapa(elfos, dl, dr))
+                if parados and part==2:
+                    break
+            #enquadramento
+            lista_p_elfos = [elfo['p'] for elfo in elfos.values()]
+            lmax = max(p[0] for p in lista_p_elfos)
+            lmin = min(p[0] for p in lista_p_elfos)
+            rmax = max(p[1] for p in lista_p_elfos)
+            rmin = min(p[1] for p in lista_p_elfos)
+            quadro = []
+            for line in self.day_23_marca_mapa(elfos, dl, dr)[lmin:lmax+1]:
+                quadro.append(line[rmin:rmax+1])
+            
+            self.day_23_desenha_mapa(quadro)
+            print(f'day23.{part}: round{round} {(lmax-lmin+1)*(rmax-rmin+1) - len(lista_p_elfos)}')
+
+
+    def day_23_marca_mapa(self, dict_elfos, l, r):
+        """Gera o mapa com os elfos."""
+        line = ['.'] * r
+        mapa = []
+        for il in range(l):
+            mapa.append([])
+            for ir in range(r):
+                mapa[il].append('.')
+
+        for elfo in dict_elfos.values():
+            l,r = elfo['p']
+            mapa[l][r] = '#'
+        return mapa
+
+    def day_23_desenha_mapa(self, mapa):
+        """Print no mapa."""
+        print('#\t', end='')
+        for i in range(len(mapa[0])):
+            print(f'{i%10}',end='')
+        print()
         for i,line in enumerate(mapa):
             print(f'{i}\t', end ='')
             for ch in line:
                 print(ch, end='')
             print()
-        
 
-        #enquadramento
-        quadro = []
-        for line in mapa:
-            if '#' in line:
-                quadro.append(line)
+    def day_24(self, data):
+        """Solution of day24 AoC2022."""
+        data = data.splitlines()
+        mapa = [list(line) for line in data]
         
-        for i,line in enumerate(quadro):
+        nevascas = {}
+        n = 0
+        lTotal = len(mapa)
+        rTotal = len(mapa[0])
+        dict_mov = {'^': [-1,0], 'v':[1,0], '<': [0,-1], '>': [0,1]}
+        limite = {'^': lTotal-2, 'v':lTotal-2, '<': rTotal-2, '>': rTotal-2}
+        for l,line in enumerate(mapa):
+            for r,ch in enumerate(line):
+                if ch in ['^', 'v', '<', '>']:
+                    nevascas[f'n{n}'] = {}
+                    nevascas[f'n{n}']['t0'] = [l,r]
+                    nevascas[f'n{n}']['ch'] = ch
+                    nevascas[f'n{n}']['m'] = dict_mov[ch]
+                    nevascas[f'n{n}']['lim'] = limite[ch]
+                    n += 1
+
+        inicial = [0,1]
+        fim = [lTotal-1, rTotal-2]
+        rota = []
+        rota.append(inicial)
+        for t in range(10):
+            neve = []
+            for n in nevascas.values():
+                neve.append([n['ch'],self.day_24_f_desc(n,t)])
+            print(t, rota)
+            neve_pos = [pos for _, pos in neve]
+            while rota:
+                pos = rota.pop(0)
+                novas_pos = []
+                novas_pos.append(pos)
+                for mov in dict_mov.values():
+                    lElfo, rElfo = [e + m for e,m in zip(pos, mov)] 
+                    if (([lElfo, rElfo] in neve_pos) or
+                        (rElfo <= 0 or rElfo >= rTotal-1) or
+                        (lElfo <= 0 or lElfo >= lTotal-1) or 
+                        ((lElfo == 0 and rElfo!=1) or (lElfo == lTotal-1 and rElfo != rTotal-2))):
+                        continue
+                    novas_pos.append([lElfo, rElfo])
+            rota = novas_pos
+            if fim in rota:
+                break
+            else:
+                t += 1
+            self.day_24_desenha_mapa(lTotal, rTotal, neve, [0,1])
+
+    def day_24_desenha_mapa(self, lT, rT, nevascas, elfo):
+        """Print no mapa."""
+
+        mapa = []
+        for l in range(lT):
+            mapa.append([])
+            for r in range(rT): 
+                if l == 0 or l==(lT-1):
+                    mapa[l].append('#')
+                elif r == 0 or r==(rT-1):
+                    mapa[l].append('#')
+                else:
+                    mapa[l].append('.')
+        mapa[0][1] = '.'
+        mapa[-1][-2] = '.'
+
+        for sentido, ponto in nevascas:
+            if mapa[ponto[0]][ponto[1]] == '.':
+                mapa[ponto[0]][ponto[1]] = sentido
+            elif mapa[ponto[0]][ponto[1]] in ['^', 'v', '<', '>']:
+                mapa[ponto[0]][ponto[1]] = 2
+            else:
+                mapa[ponto[0]][ponto[1]] += 1
+
+        print('#\t', end='')
+        for i in range(rT):
+            print(f'{i%10}',end='')
+        print()
+
+
+        for i,line in enumerate(mapa):
             print(f'{i}\t', end ='')
             for ch in line:
                 print(ch, end='')
             print()
+
+    def day_24_f_desc(self, nevasca, t):
+        """Retorna a posicao da nevasca em t."""
+        l0,r0 = nevasca['t0']
+        lMov,rMov = nevasca['m']
+        lim = nevasca['lim']
+        if nevasca['ch'] in ['^', 'v']:
+            return [(lMov*t + l0 - 1)%(lim) + 1,r0]
+        if nevasca['ch'] in ['<', '>']:
+            return [l0,(rMov*t + r0 - 1)%(lim) + 1]
+
 
 
 if __name__ == "__main__":
