@@ -1588,7 +1588,7 @@ class Solutions(object):
         n = 0
         lTotal = len(mapa)
         rTotal = len(mapa[0])
-        dict_mov = {'^': [-1,0], 'v':[1,0], '<': [0,-1], '>': [0,1]}
+        dict_mov = {'^': [-1,0], 'v':[1,0], '<': [0,-1], '>': [0,1], 'X': [0,0]}
         limite = {'^': lTotal-2, 'v':lTotal-2, '<': rTotal-2, '>': rTotal-2}
         for l,line in enumerate(mapa):
             for r,ch in enumerate(line):
@@ -1601,35 +1601,62 @@ class Solutions(object):
                     n += 1
 
         inicial = [0,1]
-        fim = [lTotal-1, rTotal-2]
-        rota = []
-        rota.append(inicial)
-        for t in range(10):
-            neve = []
-            for n in nevascas.values():
-                neve.append([n['ch'],self.day_24_f_desc(n,t)])
-            print(t, rota)
-            neve_pos = [pos for _, pos in neve]
-            while rota:
-                pos = rota.pop(0)
-                novas_pos = []
-                novas_pos.append(pos)
-                for mov in dict_mov.values():
-                    lElfo, rElfo = [e + m for e,m in zip(pos, mov)] 
-                    if (([lElfo, rElfo] in neve_pos) or
-                        (rElfo <= 0 or rElfo >= rTotal-1) or
-                        (lElfo <= 0 or lElfo >= lTotal-1) or 
-                        ((lElfo == 0 and rElfo!=1) or (lElfo == lTotal-1 and rElfo != rTotal-2))):
-                        continue
-                    novas_pos.append([lElfo, rElfo])
-            rota = novas_pos
-            if fim in rota:
-                break
-            else:
-                t += 1
-            self.day_24_desenha_mapa(lTotal, rTotal, neve, [0,1])
+        final = [lTotal-1, rTotal-2]
+        
+        neve = []
+        print(f'Neve em 0')
+        for n in nevascas.values():
+            neve.append([n['ch'],self.day_24_f_desc(n,0)])
+        self.day_24_desenha_mapa(lTotal, rTotal, neve, [])
+        posicoes_validas = []
+        posicoes_validas.append(inicial)
+        posicoes_validas.append(final)
+        for l in range(1,lTotal-1):
+            for r in range(1,rTotal-1):
+                posicoes_validas.append([l,r])
 
-    def day_24_desenha_mapa(self, lT, rT, nevascas, elfo):
+        t0 = 0
+        for entrada, saida in [[inicial,final],[final,inicial],[inicial,final]]:
+            rota = deque([entrada])
+            for t in range(t0, t0+1000):
+                neve = []
+                for n in nevascas.values():
+                    neve.append([n['ch'],self.day_24_f_desc(n,t+1)])
+                neve_pos = [pos for _, pos in neve]
+
+                novas_pos = []
+                while rota:
+                    pos = rota.popleft()
+                    for mov in dict_mov.values():
+                        lElfo, rElfo = [e + m for e,m in zip(pos, mov)]
+                        pElfo = [lElfo, rElfo]
+                        if pElfo in posicoes_validas:
+                            if not (pElfo in neve_pos or pElfo in novas_pos):
+                                novas_pos.append(pElfo)
+                rota.clear()
+                
+                error = False
+                for pos in novas_pos:
+                    if pos not in rota:
+                        rota.append(pos)
+                for p in rota:
+                    if p in neve_pos:
+                        error = True
+                        print(p)
+
+                if t%20 == 0:
+                    print(f'day24: {t+1}: {entrada} --> {saida}')
+                    self.day_24_desenha_mapa(lTotal, rTotal, neve, rota)
+
+                if saida in rota:
+                    print('cheguei')
+                    #self.day_24_desenha_mapa(lTotal, rTotal, neve, rota)
+                    t0 = t
+                    break
+            print(f'day24: {t+1}: {entrada} --> {saida}')
+
+
+    def day_24_desenha_mapa(self, lT, rT, nevascas, elfos):
         """Print no mapa."""
 
         mapa = []
@@ -1653,6 +1680,10 @@ class Solutions(object):
             else:
                 mapa[ponto[0]][ponto[1]] += 1
 
+
+        for lElfo, rElfo in elfos:
+            mapa[lElfo][rElfo] = 'E'
+
         print('#\t', end='')
         for i in range(rT):
             print(f'{i%10}',end='')
@@ -1674,6 +1705,33 @@ class Solutions(object):
             return [(lMov*t + l0 - 1)%(lim) + 1,r0]
         if nevasca['ch'] in ['<', '>']:
             return [l0,(rMov*t + r0 - 1)%(lim) + 1]
+
+    def day_25(self, data):
+        """Solution of day25 Aoc2022."""
+        list_SNAFU_in = data.splitlines()
+        simb_SNAFU = {'=': -2, '-': -1, '0': 0, '1': 1, '2': 2}
+        simb_SNAFU_back = {-2: '=', -1: '-', 0: '0', 1: '1', 2: '2'}
+        sum_dec = 0
+        for n_SNAFU in list_SNAFU_in:
+            SNAFU_to_dec = 0
+            for p, dSNAFU in enumerate(n_SNAFU[::-1]):
+                
+                SNAFU_to_dec += simb_SNAFU[dSNAFU]*5**(p)
+            sum_dec += SNAFU_to_dec
+        print(sum_dec)
+        resto = sum_dec % 5
+        quociente = int(sum_dec//5)
+        dec_to_SNAFU = []
+        while quociente:
+            resto = sum_dec % 5
+            quociente = int(sum_dec//5)
+            if resto > 2:
+                quociente += 1
+                resto -= 5
+            dec_to_SNAFU.append(resto)
+            #print(f'{sum_dec}: q:{quociente} r:{resto}')
+            sum_dec = quociente
+        print(''.join([simb_SNAFU_back[d] for d in dec_to_SNAFU[::-1]]))
 
 
 
