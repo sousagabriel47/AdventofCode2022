@@ -561,6 +561,9 @@ class Solutions(object):
     def day_12(self, data):
         """Solution day12."""
         data = data.splitlines()
+
+
+
         x = 1
         y = 0
         map = []
@@ -655,19 +658,28 @@ class Solutions(object):
         grafo_dist[no] = 0
         grafo_vist[no] = True
 
-        Q = []
+        Q = deque()
 
         Q.append(no)
         dist = 0
+        caminho = []
         while Q:
-            s = Q.pop(0)
+            s = Q.popleft()
             print(s)
             for vizinhos in grafo[s]:
                 if not grafo_vist[vizinhos]:
+                    
+                    if all([f'__{s}' not in c for c in caminho]):
+                        print(f'{s}__{vizinhos}')
+                        caminho.append(f'{s}__{vizinhos}')
+                    else:
+                        caminho = [f'{c}__{vizinhos}' if f'__{s}' in c else c for c in caminho]
+                        
+                    print(caminho)
                     grafo_vist[vizinhos] = True
                     Q.append(vizinhos)
 
-        print(dist)
+        print([len(c.split("__")) for c in caminho])
 
     def day_13(self, data):
         """Solution day13."""
@@ -899,10 +911,6 @@ class Solutions(object):
             sensors.append([int(s.split('=')[1].replace(' y','')),int(s.split('=')[2])])
             beacons.append([int(b.split('=')[1].replace(' y','')),int(b.split('=')[2])])
         radius = []
-        xmin = 0
-        xmax = 0
-        ymin = 0
-        ymax = 0
         print('Parsing sensores e beacons')
         for idx,_ in enumerate(sensors):
 
@@ -910,56 +918,30 @@ class Solutions(object):
             yr = abs(sensors[idx][1]-beacons[idx][1])
             radius.append(xr+yr)
             
-            if xmin > (sensors[idx][0]-radius[idx]):
-                xmin = sensors[idx][0]-radius[idx]
-            if xmax < (sensors[idx][0]+radius[idx]):
-                xmax = sensors[idx][0]+radius[idx]
-            if ymin > (sensors[idx][1]-radius[idx]):
-                ymin = sensors[idx][1]-radius[idx]
-            if ymax < (sensors[idx][1]+radius[idx]):
-                ymax = sensors[idx][1]+radius[idx]
-            
-            if xmin > (beacons[idx][0]):
-                xmin = beacons[idx][0]
-            if xmax < (beacons[idx][0]):
-                xmax = beacons[idx][0]
-            if ymin > (beacons[idx][1]):
-                ymin = beacons[idx][1]
-            if ymax < (beacons[idx][1]):
-                ymax = beacons[idx][1]
 
-        
-        
-        xdim = xmax-xmin+1
-        ydim = ymax-ymin+1
-        print(f'Limites - {xdim} e {ydim}')
-        maps = [['.']*(xdim) for _ in range(ydim)]
-
-
-        print('Markers')
-
-        for s,b in zip(sensors,beacons):
-            maps[s[1]-ymin][s[0]-xmin] = 'S'
-            maps[b[1]-ymin][b[0]-xmin] = 'B'
-
-        
+        y=2000000
+        marks_lim = [1e9,-1e9]
+        count = 0
         for idx,s in enumerate(sensors):
             r = radius[idx]+1
-            for l in range(-r+1,r):
-                c = r-abs(l)
-                for row in range(-c+1,c):
-                    if maps[l+s[1]-ymin][row+s[0]-xmin] == '.':
-                        maps[l+s[1]-ymin][row+s[0]-xmin] = '#'
+            
+            l = y - s[1]
+            c = r-abs(l)
+            print(f's{idx} --> {r}:{count} -- {c} - {marks_lim}')
+            if c > 0:
+                if (-c+1 + s[0]) < marks_lim[0]:
+                    marks_lim[0] = -c+1 + s[0]
+                if (c + s[0]) > marks_lim[1]:
+                    marks_lim[1] = c + s[0]
 
-        print('Mapping')
-        #self.day_14_print_map(maps)
-        y=2000000
-        count = 0
-        for row in maps[y-ymin]:
-            if row == '#':
-                count += 1
+        beacons_y = []
+        for b in beacons:
+            if b[1] == y and b not in beacons_y:
+                beacons_y.append(b)
+                                
+          
+        print(f'Part1 : {marks_lim[1]-marks_lim[0] - len(beacons_y)}')
 
-        print(f'Part1 : {count}')
 
     def day_18(self, data):
         """Solution of day18."""
