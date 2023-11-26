@@ -913,7 +913,6 @@ class Solutions(object):
         radius = []
         print('Parsing sensores e beacons')
         for idx,_ in enumerate(sensors):
-
             xr = abs(sensors[idx][0]-beacons[idx][0])
             yr = abs(sensors[idx][1]-beacons[idx][1])
             radius.append(xr+yr)
@@ -924,10 +923,8 @@ class Solutions(object):
         count = 0
         for idx,s in enumerate(sensors):
             r = radius[idx]+1
-            
             l = y - s[1]
             c = r-abs(l)
-            print(f's{idx} --> {r}:{count} -- {c} - {marks_lim}')
             if c > 0:
                 if (-c+1 + s[0]) < marks_lim[0]:
                     marks_lim[0] = -c+1 + s[0]
@@ -938,9 +935,40 @@ class Solutions(object):
         for b in beacons:
             if b[1] == y and b not in beacons_y:
                 beacons_y.append(b)
-                                
           
         print(f'Part1 : {marks_lim[1]-marks_lim[0] - len(beacons_y)}')
+
+        #part2
+        s_par = []
+        for idS1, s1 in enumerate(sensors):
+            for idS2, s2 in enumerate(sensors):
+                deltaX = abs(sensors[idS1][0]-sensors[idS2][0])
+                deltaY = abs(sensors[idS1][1]-sensors[idS2][1])
+                if (deltaX + deltaY - radius[idS1] - radius[idS2]) == 2:
+                    if len(s_par) < 2:
+                        s_par.append([[sensors[idS1],sensors[idS2]],[radius[idS1],radius[idS2]]])
+        eq = []        
+        for reta, sensores in enumerate(s_par):
+            print(f'Reta: {reta} -- {sensores}')
+            x1, y1 = sensores[0][0]
+            x2, y2 = sensores[0][1]
+            r1 = sensores[1][0]
+            r2 = sensores[1][1]
+            
+            if y2 < y1:
+                eq.append([[x1,y1 - r1 - 1],[x2, y2 + r2 + 1]])
+            else:
+                eq.append([[x2,y2 - r2 - 1],[x1, y1 + r1 + 1]])
+        pontos = []
+        for idR, reta in enumerate(eq):
+            x0, y0 = reta[0]
+            x1, y1 = reta[1]
+            delta = abs(x1 - x0)
+            pontos.append([])
+            for step in range(delta):
+                pontos[idR].append([x0 + step, y0 + step])
+
+
 
 
     def day_18(self, data):
