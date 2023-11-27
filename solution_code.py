@@ -585,20 +585,21 @@ class Solutions(object):
         map_print = [['.']*(ncols) for idx in range(nrows)]
         map_graph = [[[]*1]*(ncols) for idx in range(nrows)]
         
-        for part in [0,1]:
+        for part in [0]:
             grafo = {}
+            print(part)
             for row in range(nrows):
-                #print(f'Row: {row}\n\tCol: ', end ='')
+                print(f'Row: {row}\n\tCol: ', end ='')
                 for col in range(ncols):
                     direction = []
-                    #print(f' {col}:', end = '')
+                    print(f' {map[row][col]}_{col}:', end = '')
                     if row == 0:
                         if ((ord(map[row+1][col]) == ord(map[row][col])) or
                         (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
-                        (ord(map[row+1][col]) < ord(map[row][col])) or
-                        (ord(map[row+1][col]) == ord(map[row][col]) - part)):
+                        (ord(map[row+1][col]) == (ord(map[row][col]) - part)) or
+                        (ord(map[row+1][col]) < ord(map[row][col]))):
                             direction.append(f'{row+1}_{col}')
-                            #print('v', end='')
+                            print('v', end='')
                             
                     elif row == (nrows-1):
                         if ((ord(map[row-1][col]) == ord(map[row][col])) or
@@ -606,20 +607,20 @@ class Solutions(object):
                         (ord(map[row-1][col]) == (ord(map[row][col]) - part)) or
                         (ord(map[row-1][col]) < ord(map[row][col]))):
                             direction.append(f'{row-1}_{col}')
-                            #print('^', end='')
+                            print('^', end='')
                     else:
                         if ((ord(map[row-1][col]) == ord(map[row][col])) or
                         (ord(map[row-1][col]) == (ord(map[row][col])+1)) or
                         (ord(map[row-1][col]) == (ord(map[row][col]) - part)) or
                         (ord(map[row-1][col]) < ord(map[row][col]))):
                             direction.append(f'{row-1}_{col}')
-                            #print('^', end='')
+                            print('^', end='')
                         if ((ord(map[row+1][col]) == ord(map[row][col])) or
                         (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
                         (ord(map[row+1][col]) == (ord(map[row][col])- part)) or
                         (ord(map[row+1][col]) < ord(map[row][col]))):
                             direction.append(f'{row+1}_{col}')
-                            #print('v', end='')
+                            print('v', end='')
 
 
                     if col == 0:
@@ -628,32 +629,32 @@ class Solutions(object):
                         (ord(map[row][col+1]) == (ord(map[row][col]) - part)) or
                         (ord(map[row][col+1]) < ord(map[row][col]))):
                             direction.append(f'{row}_{col+1}')
-                            #print('>', end='')
+                            print('>', end='')
                     elif col == (ncols-1):
                         if ((ord(map[row][col-1]) == ord(map[row][col])) or
                         (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
                         (ord(map[row][col-1]) == (ord(map[row][col]) - part)) or
                         (ord(map[row][col-1]) < ord(map[row][col]))):
                             direction.append(f'{row}_{col-1}')
-                            #print('<', end='')
+                            print('<', end='')
                     else:
                         if ((ord(map[row][col-1]) == ord(map[row][col])) or
                         (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
                         (ord(map[row][col-1]) == (ord(map[row][col]) - part)) or
                         (ord(map[row][col-1]) < ord(map[row][col]))):
                             direction.append(f'{row}_{col-1}')
-                            #print('<', end='')
+                            print('<', end='')
                         if ((ord(map[row][col+1]) == ord(map[row][col])) or
                         (ord(map[row][col+1]) == (ord(map[row][col])+1)) or
                         (ord(map[row][col+1]) == (ord(map[row][col]) - part)) or
                         (ord(map[row][col+1]) < ord(map[row][col]))):
                             direction.append(f'{row}_{col+1}')
-                            #print('>', end='')
+                            print('>', end='')
 
                     grafo[f'{row}_{col}'] = direction
 
                     map_graph[row][col] = direction
-
+                print()
 
             grafo_dist = {}
             grafo_vist = {}
