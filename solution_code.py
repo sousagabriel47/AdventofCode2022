@@ -584,102 +584,109 @@ class Solutions(object):
         ncols = len(map[0])
         map_print = [['.']*(ncols) for idx in range(nrows)]
         map_graph = [[[]*1]*(ncols) for idx in range(nrows)]
-        grafo = {}
-        for row in range(nrows):
-            print(f'Row: {row}\n\tCol: ', end ='')
-            for col in range(ncols):
-                direction = []
-                print(f' {col}:', end = '')
-                if row == 0:
-                    if ((ord(map[row+1][col]) == ord(map[row][col])) or
-                       (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
-                       (ord(map[row+1][col]) < ord(map[row][col]))):
-                        direction.append(f'{row+1}_{col}')
-                        print('v', end='')
-                        
-                elif row == (nrows-1):
-                    if ((ord(map[row-1][col]) == ord(map[row][col])) or
-                       (ord(map[row-1][col]) == (ord(map[row][col])+1)) or
-                       (ord(map[row-1][col]) < ord(map[row][col]))):
-                        direction.append(f'{row-1}_{col}')
-                        print('^', end='')
-                else:
-                    if ((ord(map[row-1][col]) == ord(map[row][col])) or
-                       (ord(map[row-1][col]) == (ord(map[row][col])+1)) or
-                       (ord(map[row-1][col]) < ord(map[row][col]))):
-                        direction.append(f'{row-1}_{col}')
-                        print('^', end='')
-                    if ((ord(map[row+1][col]) == ord(map[row][col])) or
-                       (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
-                       (ord(map[row+1][col]) < ord(map[row][col]))):
-                        direction.append(f'{row+1}_{col}')
-                        print('v', end='')
-
-
-                if col == 0:
-                    if ((ord(map[row][col+1]) == ord(map[row][col])) or
-                       (ord(map[row][col+1]) == (ord(map[row][col])+1)) or
-                       (ord(map[row][col+1]) < ord(map[row][col]))):
-                        direction.append(f'{row}_{col+1}')
-                        print('>', end='')
-                elif col == (ncols-1):
-                    if ((ord(map[row][col-1]) == ord(map[row][col])) or
-                       (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
-                       (ord(map[row][col-1]) < ord(map[row][col]))):
-                        direction.append(f'{row}_{col-1}')
-                        print('<', end='')
-                else:
-                    if ((ord(map[row][col-1]) == ord(map[row][col])) or
-                       (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
-                       (ord(map[row][col-1]) < ord(map[row][col]))):
-                        direction.append(f'{row}_{col-1}')
-                        print('<', end='')
-                    if ((ord(map[row][col+1]) == ord(map[row][col])) or
-                       (ord(map[row][col+1]) == (ord(map[row][col])+1)) or
-                       (ord(map[row][col+1]) < ord(map[row][col]))):
-                        direction.append(f'{row}_{col+1}')
-                        print('>', end='')
-
-                grafo[f'{row}_{col}'] = direction
-
-                map_graph[row][col] = direction
-            print()
-
-
-        grafo_dist = {}
-        grafo_vist = {}
-
-        for no in grafo.keys():
-            grafo_dist[no] = int(1e9)
-            grafo_vist[no] = False
-
-        no = f'{start[0]}_{start[1]}'
         
-        grafo_dist[no] = 0
-        grafo_vist[no] = True
-
-        Q = deque()
-
-        Q.append(no)
-        dist = 0
-        caminho = []
-        while Q:
-            s = Q.popleft()
-            print(s)
-            for vizinhos in grafo[s]:
-                if not grafo_vist[vizinhos]:
-                    
-                    if all([f'__{s}' not in c for c in caminho]):
-                        print(f'{s}__{vizinhos}')
-                        caminho.append(f'{s}__{vizinhos}')
+        for part in [0,1]:
+            grafo = {}
+            for row in range(nrows):
+                #print(f'Row: {row}\n\tCol: ', end ='')
+                for col in range(ncols):
+                    direction = []
+                    #print(f' {col}:', end = '')
+                    if row == 0:
+                        if ((ord(map[row+1][col]) == ord(map[row][col])) or
+                        (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
+                        (ord(map[row+1][col]) < ord(map[row][col])) or
+                        (ord(map[row+1][col]) == ord(map[row][col]) - part)):
+                            direction.append(f'{row+1}_{col}')
+                            #print('v', end='')
+                            
+                    elif row == (nrows-1):
+                        if ((ord(map[row-1][col]) == ord(map[row][col])) or
+                        (ord(map[row-1][col]) == (ord(map[row][col])+1)) or
+                        (ord(map[row-1][col]) == (ord(map[row][col]) - part)) or
+                        (ord(map[row-1][col]) < ord(map[row][col]))):
+                            direction.append(f'{row-1}_{col}')
+                            #print('^', end='')
                     else:
-                        caminho = [f'{c}__{vizinhos}' if f'__{s}' in c else c for c in caminho]
-                        
-                    print(caminho)
-                    grafo_vist[vizinhos] = True
-                    Q.append(vizinhos)
+                        if ((ord(map[row-1][col]) == ord(map[row][col])) or
+                        (ord(map[row-1][col]) == (ord(map[row][col])+1)) or
+                        (ord(map[row-1][col]) == (ord(map[row][col]) - part)) or
+                        (ord(map[row-1][col]) < ord(map[row][col]))):
+                            direction.append(f'{row-1}_{col}')
+                            #print('^', end='')
+                        if ((ord(map[row+1][col]) == ord(map[row][col])) or
+                        (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
+                        (ord(map[row+1][col]) == (ord(map[row][col])- part)) or
+                        (ord(map[row+1][col]) < ord(map[row][col]))):
+                            direction.append(f'{row+1}_{col}')
+                            #print('v', end='')
 
-        print([len(c.split("__")) for c in caminho])
+
+                    if col == 0:
+                        if ((ord(map[row][col+1]) == ord(map[row][col])) or
+                        (ord(map[row][col+1]) == (ord(map[row][col])+1)) or
+                        (ord(map[row][col+1]) == (ord(map[row][col]) - part)) or
+                        (ord(map[row][col+1]) < ord(map[row][col]))):
+                            direction.append(f'{row}_{col+1}')
+                            #print('>', end='')
+                    elif col == (ncols-1):
+                        if ((ord(map[row][col-1]) == ord(map[row][col])) or
+                        (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
+                        (ord(map[row][col-1]) == (ord(map[row][col]) - part)) or
+                        (ord(map[row][col-1]) < ord(map[row][col]))):
+                            direction.append(f'{row}_{col-1}')
+                            #print('<', end='')
+                    else:
+                        if ((ord(map[row][col-1]) == ord(map[row][col])) or
+                        (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
+                        (ord(map[row][col-1]) == (ord(map[row][col]) - part)) or
+                        (ord(map[row][col-1]) < ord(map[row][col]))):
+                            direction.append(f'{row}_{col-1}')
+                            #print('<', end='')
+                        if ((ord(map[row][col+1]) == ord(map[row][col])) or
+                        (ord(map[row][col+1]) == (ord(map[row][col])+1)) or
+                        (ord(map[row][col+1]) == (ord(map[row][col]) - part)) or
+                        (ord(map[row][col+1]) < ord(map[row][col]))):
+                            direction.append(f'{row}_{col+1}')
+                            #print('>', end='')
+
+                    grafo[f'{row}_{col}'] = direction
+
+                    map_graph[row][col] = direction
+
+
+            grafo_dist = {}
+            grafo_vist = {}
+
+            for no in grafo.keys():
+                grafo_dist[no] = int(1e9)
+                grafo_vist[no] = False
+
+            no = f'{start[0]}_{start[1]}'
+            no_fim = f'{end[0]}_{end[1]}'
+            grafo_dist[no] = 0
+            grafo_vist[no] = True
+
+            Q = deque()
+
+            
+            dist = 0
+            caminho = []
+            Q.append([no,dist])
+            while Q:
+                state = Q.popleft()
+                no, dist = state
+
+                if no == no_fim:
+                    print(dist)
+                    break
+
+
+                for vizinho in grafo[no]:
+                    if [vizinho,dist + 1] not in Q:
+                        Q.append([vizinho,dist + 1])
+
+            print(f'part{part+1}: {dist}')
 
     def day_13(self, data):
         """Solution day13."""
@@ -959,14 +966,8 @@ class Solutions(object):
                 eq.append([[x1,y1 - r1 - 1],[x2, y2 + r2 + 1]])
             else:
                 eq.append([[x2,y2 - r2 - 1],[x1, y1 + r1 + 1]])
-        pontos = []
-        for idR, reta in enumerate(eq):
-            x0, y0 = reta[0]
-            x1, y1 = reta[1]
-            delta = abs(x1 - x0)
-            pontos.append([])
-            for step in range(delta):
-                pontos[idR].append([x0 + step, y0 + step])
+        
+        
 
 
 
@@ -1562,7 +1563,6 @@ class Solutions(object):
             self.day_23_desenha_mapa(quadro)
             print(f'day23.{part}: round{round} {(lmax-lmin+1)*(rmax-rmin+1) - len(lista_p_elfos)}')
 
-
     def day_23_marca_mapa(self, dict_elfos, l, r):
         """Gera o mapa com os elfos."""
         line = ['.'] * r
@@ -1664,7 +1664,6 @@ class Solutions(object):
                     t0 = t
                     break
             print(f'day24: {t+1}: {entrada} --> {saida}')
-
 
     def day_24_desenha_mapa(self, lT, rT, nevascas, elfos):
         """Print no mapa."""
