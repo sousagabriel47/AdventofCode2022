@@ -561,133 +561,87 @@ class Solutions(object):
     def day_12(self, data):
         """Solution day12."""
         data = data.splitlines()
+        mapa = [list(line) for line in data]
 
+        start = []
+        end = []
+        grafo = {}
+        moves = [[0,1],[0,-1],[1,0],[-1,0]]
+        maxL = len(mapa)
+        maxR = len(mapa[0])
 
+        for part in [1]:
+            for idL,line in enumerate(mapa):
+                for idr,ch in enumerate(line):
+                    if ch == 'S':
+                        start = [idL,idr]
+                        mapa[idL][idr] = 'a'
+                        ch = 'a'
+                    if ch == 'E':
+                        end = [idL, idr]
+                        mapa[idL][idr] = 'z'
 
-        x = 1
-        y = 0
-        map = []
-        for row in range(len(data)):
-            map.append([])
-            for col in range(len(data[row])):
-                level = data[row][col]
-                if level == 'S':
-                    start = (row,col)
-                    data[row][col].replace('S','a')
-                    level = 'a'  
-                elif level == 'E':
-                    end = (row,col)
-                    data[row][col].replace('E','z')
-                    level = 'z'        
-                map[row].append(level)
-        nrows = len(map)
-        ncols = len(map[0])
-        map_print = [['.']*(ncols) for idx in range(nrows)]
-        map_graph = [[[]*1]*(ncols) for idx in range(nrows)]
-        
-        for part in [0]:
-            grafo = {}
-            print(part)
-            for row in range(nrows):
-                print(f'Row: {row}\n\tCol: ', end ='')
-                for col in range(ncols):
-                    direction = []
-                    print(f' {map[row][col]}_{col}:', end = '')
-                    if row == 0:
-                        if ((ord(map[row+1][col]) == ord(map[row][col])) or
-                        (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
-                        (ord(map[row+1][col]) == (ord(map[row][col]) - part)) or
-                        (ord(map[row+1][col]) < ord(map[row][col]))):
-                            direction.append(f'{row+1}_{col}')
-                            print('v', end='')
-                            
-                    elif row == (nrows-1):
-                        if ((ord(map[row-1][col]) == ord(map[row][col])) or
-                        (ord(map[row-1][col]) == (ord(map[row][col])+1)) or
-                        (ord(map[row-1][col]) == (ord(map[row][col]) - part)) or
-                        (ord(map[row-1][col]) < ord(map[row][col]))):
-                            direction.append(f'{row-1}_{col}')
-                            print('^', end='')
-                    else:
-                        if ((ord(map[row-1][col]) == ord(map[row][col])) or
-                        (ord(map[row-1][col]) == (ord(map[row][col])+1)) or
-                        (ord(map[row-1][col]) == (ord(map[row][col]) - part)) or
-                        (ord(map[row-1][col]) < ord(map[row][col]))):
-                            direction.append(f'{row-1}_{col}')
-                            print('^', end='')
-                        if ((ord(map[row+1][col]) == ord(map[row][col])) or
-                        (ord(map[row+1][col]) == (ord(map[row][col])+1)) or
-                        (ord(map[row+1][col]) == (ord(map[row][col])- part)) or
-                        (ord(map[row+1][col]) < ord(map[row][col]))):
-                            direction.append(f'{row+1}_{col}')
-                            print('v', end='')
+            for idL,line in enumerate(mapa):
+                for idr,ch in enumerate(line):
+                    grafo[f'{idL}_{idr}'] = []
+                    atual = ord(ch)
+                    for mov in moves:
+                        pL,pR = [p+m for p,m in zip([idL,idr], mov)]
+                        if ((pL >= 0 and pR >=0) and
+                            (pL <= (maxL - 1) and pR <= (maxR - 1))):
+                            vizinho = ord(mapa[pL][pR])
+                            if ((atual == vizinho) or
+                                (atual == (vizinho - 1))):
+                                grafo[f'{idL}_{idr}'].append(f'{pL}_{pR}')
 
-
-                    if col == 0:
-                        if ((ord(map[row][col+1]) == ord(map[row][col])) or
-                        (ord(map[row][col+1]) == (ord(map[row][col])+1)) or
-                        (ord(map[row][col+1]) == (ord(map[row][col]) - part)) or
-                        (ord(map[row][col+1]) < ord(map[row][col]))):
-                            direction.append(f'{row}_{col+1}')
-                            print('>', end='')
-                    elif col == (ncols-1):
-                        if ((ord(map[row][col-1]) == ord(map[row][col])) or
-                        (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
-                        (ord(map[row][col-1]) == (ord(map[row][col]) - part)) or
-                        (ord(map[row][col-1]) < ord(map[row][col]))):
-                            direction.append(f'{row}_{col-1}')
-                            print('<', end='')
-                    else:
-                        if ((ord(map[row][col-1]) == ord(map[row][col])) or
-                        (ord(map[row][col-1]) == (ord(map[row][col])+1)) or
-                        (ord(map[row][col-1]) == (ord(map[row][col]) - part)) or
-                        (ord(map[row][col-1]) < ord(map[row][col]))):
-                            direction.append(f'{row}_{col-1}')
-                            print('<', end='')
-                        if ((ord(map[row][col+1]) == ord(map[row][col])) or
-                        (ord(map[row][col+1]) == (ord(map[row][col])+1)) or
-                        (ord(map[row][col+1]) == (ord(map[row][col]) - part)) or
-                        (ord(map[row][col+1]) < ord(map[row][col]))):
-                            direction.append(f'{row}_{col+1}')
-                            print('>', end='')
-
-                    grafo[f'{row}_{col}'] = direction
-
-                    map_graph[row][col] = direction
-                print()
-
-            grafo_dist = {}
-            grafo_vist = {}
-
-            for no in grafo.keys():
-                grafo_dist[no] = int(1e9)
-                grafo_vist[no] = False
-
+            print(grafo)
+            
             no = f'{start[0]}_{start[1]}'
             no_fim = f'{end[0]}_{end[1]}'
-            grafo_dist[no] = 0
-            grafo_vist[no] = True
 
             Q = deque()
 
             
             dist = 0
-            caminho = []
             Q.append([no,dist])
+            marks = []
+            states = []
+            it = 0
             while Q:
                 state = Q.popleft()
+                it += 1
+                if state in states:
+                    continue
+                states.append(state)
+
                 no, dist = state
+
+
+                marks.append(no)
+                
+                
+                if it%20 == 0:
+                    self.day_12_mapa(deepcopy(mapa),marks)
+                    print(dist)
 
                 if no == no_fim:
                     print(dist)
                     break
 
-
                 for vizinho in grafo[no]:
                     if [vizinho,dist + 1] not in Q:
                         Q.append([vizinho,dist + 1])
 
-            print(f'part{part+1}: {dist}')
+            print(f'part{part}: {dist}')
+    
+    def day_12_mapa(self, mapa, marks):
+        for mark in marks:
+            L,R = [int(m) for m in mark.split('_')]
+            mapa[L][R] = 'X'
+        L,R = [int(m) for m in marks[-1].split('_')]
+        mapa[L][R] = '#'
+        self.day_23_desenha_mapa(mapa)
+
 
     def day_13(self, data):
         """Solution day13."""
@@ -1580,10 +1534,18 @@ class Solutions(object):
 
     def day_23_desenha_mapa(self, mapa):
         """Print no mapa."""
+        rows = len(mapa[0])
+        if rows > 9:
+            print('#\t', end='')
+            for i in range(rows):
+                print(f'{int(i//10)}',end='')
+            print()
+
         print('#\t', end='')
-        for i in range(len(mapa[0])):
+        for i in range(rows):
             print(f'{i%10}',end='')
-        print()
+        print('\n')
+
         for i,line in enumerate(mapa):
             print(f'{i}\t', end ='')
             for ch in line:
