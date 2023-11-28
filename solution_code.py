@@ -591,7 +591,7 @@ class Solutions(object):
                             (pL <= (maxL - 1) and pR <= (maxR - 1))):
                             vizinho = ord(mapa[pL][pR])
                             if ((atual == vizinho) or
-                                (atual == (vizinho - 1))):
+                                (atual > (vizinho - 1))):
                                 grafo[f'{idL}_{idr}'].append(f'{pL}_{pR}')
 
             print(grafo)
@@ -610,12 +610,12 @@ class Solutions(object):
             while Q:
                 state = Q.popleft()
                 it += 1
-                if state in states:
-                    continue
-                states.append(state)
+                
 
                 no, dist = state
-
+                if no in states:
+                    continue
+                states.append(no)
 
                 marks.append(no)
                 
