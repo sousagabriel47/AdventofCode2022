@@ -570,7 +570,7 @@ class Solutions(object):
         maxL = len(mapa)
         maxR = len(mapa[0])
 
-        for part in [1]:
+        for part in [1,2]:
             for idL,line in enumerate(mapa):
                 for idr,ch in enumerate(line):
                     if ch == 'S':
@@ -590,18 +590,30 @@ class Solutions(object):
                         if ((pL >= 0 and pR >=0) and
                             (pL <= (maxL - 1) and pR <= (maxR - 1))):
                             vizinho = ord(mapa[pL][pR])
-                            if ((atual == vizinho) or
-                                (atual > (vizinho - 1))):
-                                grafo[f'{idL}_{idr}'].append(f'{pL}_{pR}')
+                            if part == 1:
+                                if ((atual == vizinho) or
+                                    (atual >= (vizinho - 1))):
+                                    grafo[f'{idL}_{idr}'].append(f'{pL}_{pR}')
+                            elif part == 2:
+                                if ((atual == vizinho) or
+                                    (atual <= (vizinho + 1))):
+                                    grafo[f'{idL}_{idr}'].append(f'{pL}_{pR}')
 
             print(grafo)
             
-            no = f'{start[0]}_{start[1]}'
-            no_fim = f'{end[0]}_{end[1]}'
+            if part == 1:
+                no = f'{start[0]}_{start[1]}'
+                no_fim = f'{end[0]}_{end[1]}'
+            elif part == 2:
+                no_fim = ord('a')
+                no = f'{end[0]}_{end[1]}'
+
+    
+
 
             Q = deque()
 
-            
+            #self.day_23_desenha_mapa(mapa)
             dist = 0
             Q.append([no,dist])
             marks = []
@@ -620,13 +632,17 @@ class Solutions(object):
                 marks.append(no)
                 
                 
-                if it%20 == 0:
-                    self.day_12_mapa(deepcopy(mapa),marks)
-                    print(dist)
+                # if it%20 == 0:
+                #     self.day_12_mapa(deepcopy(mapa),marks)
+                #     print(dist)
 
-                if no == no_fim:
-                    print(dist)
-                    break
+                if part == 1:
+                    if no == no_fim:
+                        break
+                else:
+                    L, R = [int(n) for n in no.split('_')]
+                    if ord(mapa[L][R]) == no_fim:
+                        break
 
                 for vizinho in grafo[no]:
                     if [vizinho,dist + 1] not in Q:
@@ -921,8 +937,7 @@ class Solutions(object):
                 eq.append([[x1,y1 - r1 - 1],[x2, y2 + r2 + 1]])
             else:
                 eq.append([[x2,y2 - r2 - 1],[x1, y1 + r1 + 1]])
-        
-        
+
 
 
 
