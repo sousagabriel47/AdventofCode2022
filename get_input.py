@@ -15,7 +15,7 @@ import requests
 # 4) Click click
 # 5) Click cookies
 # 6) Grab the value for session. Fill it in.
-SESSION = '<FILL_ME_IN>'
+SESSION = 'teste'
 
 useragent = 'https://github.com/jonathanpaulson/AdventOfCode/blob/master/get_input.py by jonathanpaulson@gmail.com'
 parser = argparse.ArgumentParser(description='Read input')
