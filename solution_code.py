@@ -620,7 +620,7 @@ class Solutions(object):
                 marks.append(no)
                 
                 
-                if it%20 == 0:
+                if it%100 == 0:
                     self.day_12_mapa(deepcopy(mapa),marks)
                     print(dist)
 
