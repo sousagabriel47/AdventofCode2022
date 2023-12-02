@@ -937,7 +937,7 @@ class Solutions(object):
             r2 = sensores[1][1]
             deltaX = x2 - x1
             deltaY = y2 - y1
-            
+            print(deltaX, deltaY)
             
 
 
