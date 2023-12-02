@@ -928,7 +928,9 @@ class Solutions(object):
                     print(s1, s2, dist)
                     if len(s_par) < 2:
                         s_par.append([[sensors[idS1],sensors[idS2]],[radius[idS1],radius[idS2]]])
-        eq = []        
+        eq = []
+        m = []
+        y0 = []        
         for reta, sensores in enumerate(s_par):
             print(f'Reta: {reta} -- {sensores}')
             x1, y1 = sensores[0][0]
@@ -937,9 +939,27 @@ class Solutions(object):
             r2 = sensores[1][1]
             deltaX = x2 - x1
             deltaY = y2 - y1
-            print(deltaX, deltaY)
             
+            if deltaX > 0:
+                if deltaY > 0:
+                    m.append(-1)
+                    y0.append(r1 + 1 + y1 - x1)
+                else:
+                    m.append(1)
+                    y0.append(-r1 - 1 + y1 - x1)
+            else:
+                if deltaY > 0:
+                    m.append(1)
+                    y0.append(r1 + 1 + y1 - x1)
+                    
+                else:
+                    m.append(-1)
+                    y0.append(-r1 - 1 + y1 - x1)
 
+
+        x = (y0[1] - y0[0])/(m[0] - m[1])
+        y = m[0]*x + y0[0]
+        print(f'part2: {x*4000000 + y}')
 
 
 
