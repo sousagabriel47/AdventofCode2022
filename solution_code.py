@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
 """Solution of Advent of Code 2022."""
+
+import os
 import math
 from copy import deepcopy
 import sys
@@ -1747,7 +1750,8 @@ class Solutions(object):
 
 if __name__ == "__main__":
     nday = int(input('Day :'))
-    with open(f'.\data\day{nday}','r') as file:
+    path = os.path.join("data", f'day{nday}')
+    with open(path , 'r' ) as file:
         data = file.read()
 
     print(f'####### DAY {nday} #######')
