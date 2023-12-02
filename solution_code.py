@@ -928,41 +928,77 @@ class Solutions(object):
                 deltaY = abs(sensors[idS1][1]-sensors[idS2][1])
                 dist = (deltaX + deltaY - radius[idS1] - radius[idS2])
                 if dist == 2:
-                    print(s1, s2, dist)
+                    #print(s1, s2, dist)
                     if len(s_par) < 2:
                         s_par.append([[sensors[idS1],sensors[idS2]],[radius[idS1],radius[idS2]]])
-        eq = []
-        m = []
-        y0 = []        
-        for reta, sensores in enumerate(s_par):
-            print(f'Reta: {reta} -- {sensores}')
-            x1, y1 = sensores[0][0]
-            x2, y2 = sensores[0][1]
-            r1 = sensores[1][0]
-            r2 = sensores[1][1]
-            deltaX = x2 - x1
-            deltaY = y2 - y1
-            
-            if deltaX > 0:
-                if deltaY > 0:
-                    m.append(-1)
-                    y0.append(r1 + 1 + y1 - x1)
-                else:
-                    m.append(1)
-                    y0.append(-r1 - 1 + y1 - x1)
-            else:
-                if deltaY > 0:
-                    m.append(1)
-                    y0.append(r1 + 1 + y1 - x1)
-                    
-                else:
-                    m.append(-1)
-                    y0.append(-r1 - 1 + y1 - x1)
+        print(s_par)
+        
+        retas = []  # [a, b] em y = ax + b
+
+        for sensores, distancia in s_par:
+            print(sensores, "->", distancia)
+            sensor_1=sensores[0]
+            sensor_2=sensores[1]
+            print(f'sensor_1: {sensor_1}')
+            print(f'sensor_2: {sensor_2}')
+            x_0, y_0 = sensor_1
+            x_1, y_1 = sensor_2
+
+            if x_0 < x_1 and y_0 < y_1:
+                a = -1
+                b = a * ( - (x_0 + distancia[0] + 1 ) ) + y_0  # y = m(x-x0)+y_0
+            elif x_0 < x_1 and y_0 > y_1:
+                a = 1
+                b = a * ( - (x_0 + distancia[0] ) + 1) + y_0  # y = m(x-x0)+y_0
+            elif x_0 > x_1 and y_0 < y_1:
+                a = 1
+                b = a * ( - (x_0 - distancia[0] - 1) ) + y_0  # y = m(x-x0)+y_0
+            elif x_0 > x_1 and y_0 > y_1:
+                a = -1
+                b = a * ( - (x_0 - distancia[0] - 1) ) + y_0  # y = m(x-x0)+y_0
+            retas.append([a, b])
+
+        print(retas)
+
+        y = ( retas[0][1] + retas[1][1] ) / 2
+        x = ( y - retas[0][1] ) / retas[0][0] 
+        
+        resposta = x * 4000000 + y
+
+        print(f"x: {x}, y: {y}, resposta: {resposta}")
+
+        #eq = []
+        #m = []
+        #y0 = []        
+        #for reta, sensores in enumerate(s_par):
+        #    #print(f'Reta: {reta} -- {sensores}')
+        #    x1, y1 = sensores[0][0]
+        #    x2, y2 = sensores[0][1]
+        #    r1 = sensores[1][0]
+        #    r2 = sensores[1][1]
+        #    deltaX = x2 - x1
+        #    deltaY = y2 - y1
+        #    
+        #    if deltaX > 0:
+        #        if deltaY > 0:
+        #            m.append(-1)
+        #            y0.append(r1 + 1 + y1 - x1)
+        #        else:
+        #            m.append(1)
+        #            y0.append(-r1 - 1 + y1 - x1)
+        #    else:
+        #        if deltaY > 0:
+        #            m.append(1)
+        #            y0.append(r1 + 1 + y1 - x1)
+        #            
+        #        else:
+        #            m.append(-1)
+        #            y0.append(-r1 - 1 + y1 - x1)
 
 
-        x = (y0[1] - y0[0])/(m[0] - m[1])
-        y = m[0]*x + y0[0]
-        print(f'part2: {x*4000000 + y}')
+        #x = (y0[1] - y0[0])/(m[0] - m[1])
+        #y = m[0]*x + y0[0]
+        ##print(f'part2: {x*4000000 + y}')
 
 
 
